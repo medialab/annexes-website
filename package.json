@@ -14,7 +14,11 @@
 		"format": "prettier --write ."
 	},
 	"dependencies": {
-		"@thisux/sveltednd": "^0.0.20"
+		"@thisux/sveltednd": "^0.0.20",
+		"canvas": "^3.2.1",
+		"pdf-viewer": "^0.8.1",
+		"pdfjs-dist": "^5.4.624",
+		"svelte-pdf": "^2.0.2"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-static": "^3.0.10",

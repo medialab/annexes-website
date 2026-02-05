@@ -4,23 +4,14 @@
 	import Canvas from "$lib/components/canvas.svelte";
     import Menu from "$lib/components/menu.svelte";
 
-	let editions = [
-        {
-            name: "Artificial Inquiries",
-            coverimg: "Artificial-Inquiries.png"
-        },
-        {
-            name: "Styles de moderation",
-            coverimg: "styles.png"
-        },
-    ]
+    let { data } = $props();
 </script>
 
 <Header></Header>
 <Menu></Menu>
 
 <div class="w-full h-screen fixed">
-    <Canvas {editions}></Canvas>
+    <Canvas editions={data.editions}></Canvas>
 </div>
 
 <Footer></Footer>

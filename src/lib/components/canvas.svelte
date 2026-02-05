@@ -152,7 +152,7 @@
 			aria-label={edition.name}
 			title={edition.name}
 		>
-			<img src={`/editions/${edition.coverimg}`} alt={edition.name} class="h-full w-full object-cover" />
+			<img src={`/editions/${edition.coverImg}`} alt={edition.name} class="h-full w-full object-cover" />
 		</button>
 	{/each}
 </section>

@@ -1,6 +1,20 @@
 export type Edition = {
+    id: string;
     name: string;
-    coverimg: string;
+    coverImg: string;
+    subtitle: string;
+    publishingDate: string;
+    isbn: string;
+    description: string;
+    editors: string[];
+    designers: string[];
+    contributors: string[];
+    keywords: string[];
+    parentProject: string;
+    downloadHref: string;
+    coPublisher: string;
+    parentUrl: string;
+    coPublisherUrl: string;
 };
 
 export type DropItem =
