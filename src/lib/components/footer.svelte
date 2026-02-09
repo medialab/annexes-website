@@ -1,54 +1,53 @@
 <script lang="ts">
-    //@ts-expect-error sveltednd types are not working
 	import { droppable, type DragDropState } from '@thisux/sveltednd';
-    import type { Edition, DropItem } from '$lib/types';
-    import { isMenuOpen, currentEdition } from '$lib/stores';
-
-	
+	import type { Edition, DropItem } from '$lib/types';
+	import { isMenuOpen, currentEdition } from '$lib/stores';
 
 	const dropContainer = 'footer-dropzone';
 	let dropped = $state<DropItem[]>([]);
 
-	function labelFor(item: DropItem, index: number) {
-		if (typeof item === 'string') return item;
-		return item.label ?? item.name ?? item.title ?? `Item ${index + 1}`;
-	}
-
-	function handleDrop(state: DragDropState<DropItem>) {
-		const { draggedItem, targetContainer } = state;
-		if (!targetContainer || draggedItem == null) return;
-		dropped = [...dropped, draggedItem];
+	function handleDrop(state: DragDropState<Edition>) {
+		const { draggedItem } = state;
+		if (draggedItem) {
+			openMenu(draggedItem);
+		}
 	}
 
 	function clearDropzone() {
 		dropped = [];
 	}
 
-    let isFooterOpen = $state(false);
+	let isFooterOpen = $state(false);
 
-    function openMenu(edition:Edition) {
-        isMenuOpen.set(true);
-        isFooterOpen=false;
-        clearDropzone();
-        currentEdition.set(edition);
-    }
+	function openMenu(edition: Edition) {
+		console.log('edition dropped:', edition);
+		isMenuOpen.set(true);
+		isFooterOpen = false;
+		currentEdition.set(edition);
+		clearDropzone();
+	}
 </script>
 
 <footer
-	class="max-w-[1200px] transition-all duration-300 ease-in-out w-full place-self-center bottom-6 fixed bg-white/95 z-2 backdrop-blur flex gap-3 p-2 rounded-2xl justify-center items-center h-fit md:mx-0 mx-2"
-    class:open={isFooterOpen}
-    use:droppable={{
-			container: dropContainer,
-			callbacks: { onDrop: () => openMenu(dropped[0] as Edition), onDragEnter: () => isFooterOpen = true, onDragLeave: () => isFooterOpen = false },
-			attributes: {
-				dragOverClass:
-					'!border-blue-500 !border-dashed !bg-blue-50 ring-1 ring-blue-300/60 shadow-[0_0_0_3px_rgba(59,130,246,0.15)]'
-			}
-		}}
+	class="fixed right-4 bottom-6 left-4 z-2 hidden h-fit items-center justify-center gap-3 rounded-2xl bg-white/95 p-2 backdrop-blur transition-all duration-300 ease-in-out md:right-auto md:left-1/2 md:flex md:w-full md:max-w-[1200px] md:-translate-x-1/2"
+	class:open={isFooterOpen}
+	use:droppable={{
+		container: dropContainer,
+		callbacks: {
+			onDrop: handleDrop,
+			onDragEnter: () => (isFooterOpen = true),
+			onDragLeave: () => (isFooterOpen = false)
+		},
+		attributes: {
+			dragOverClass:
+				'!border-blue-500 !border-dashed !bg-blue-50 ring-1 ring-blue-300/60 shadow-[0_0_0_3px_rgba(59,130,246,0.15)]'
+		}
+	}}
 >
 	<div
-		class=" min-h-[44px] px-6 border-dashed border-2 border-gray-200 bg-gray-50 {isFooterOpen ? 'h-[170px] w-full!' : ''} transition-all duration-300 ease-in-out pill"
-		
+		class=" min-h-[44px] border-2 border-dashed border-gray-200 bg-gray-50 px-6 {isFooterOpen
+			? 'h-[170px] w-full!'
+			: ''} pill transition-all duration-300 ease-in-out"
 		aria-label="Footer drop zone"
 	>
 		{#if !isFooterOpen}

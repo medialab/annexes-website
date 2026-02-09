@@ -4,13 +4,14 @@
         url?: string;
         label?: string;
         icon?: string;
+        onClick?: () => void;
     }
 
     let props: Props = $props();
 </script>
 
 {#if props.href || props.url}
-    <a href={props.href ?? props.url} target={props.href ? "_self" : "_blank"} rel="noopener noreferrer" class="pill">
+    <a href={props.href ?? props.url} target={props.href ? "_self" : "_blank"} rel="noopener noreferrer" class="pill" onclick={props.onClick}>
         {#if props.label}
             <p>{props.label}</p>
         {/if}

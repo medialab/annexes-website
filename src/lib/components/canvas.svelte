@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { draggable } from '@thisux/sveltednd';
-    import type { Edition } from '$lib/types';
+	import { isMenuOpen, currentEdition } from '$lib/stores';
+	import type { Edition } from '$lib/types';
 
 	let { editions = [] } = $props<{ editions?: Edition[] }>();
 
@@ -24,7 +25,7 @@
 			next.push({
 				x: Math.random() * maxX,
 				y: Math.random() * maxY,
-                r: rotation
+				r: rotation
 			});
 		}
 
@@ -35,7 +36,7 @@
 		if (!host) return;
 
 		const { width, height } = host.getBoundingClientRect();
-        
+
 		positions = initPositions(width, height, editions.length);
 
 		return mousePosition(host);
@@ -128,14 +129,11 @@
 		event.dataTransfer.setDragImage(ghost, offsetX, offsetY);
 		setTimeout(() => ghost.remove(), 0);
 	}
-
-    
-    
 </script>
 
 <section
 	bind:this={host}
-	class="relative w-full h-screen overflow-hidden z-0"
+	class="z-0 flex w-full flex-col items-center justify-center md:relative md:block md:h-screen md:overflow-hidden"
 >
 	{#each editions as edition, index}
 		{@const pos = positions[index]}
@@ -144,15 +142,35 @@
 			use:draggable={{
 				container: 'canvas',
 				dragData: edition,
-				attributes: { draggingClass: 'opacity-0'}
+				attributes: { draggingClass: 'opacity-0' }
 			}}
 			ondragstart={setDragImage}
-			class="absolute left-0 top-0 h-[320px] rounded-xl overflow-hidden shadow-[0_12px_30px_rgba(15,23,42,0.16)] bg-white/90 cursor-grab active:cursor-grabbing duration-50 transition-all"
-			style={pos ? `transform: translate3d(${pos.x + pan.x}px, ${pos.y + pan.y}px, 0) rotate(${pos.r}deg);` : ""}
+			class="absolute top-0 left-0 hidden h-[320px] cursor-grab overflow-hidden rounded-xl bg-white/90 shadow-[0_12px_30px_rgba(15,23,42,0.16)] transition-all duration-50 active:cursor-grabbing md:block"
+			style={pos
+				? `transform: translate3d(${pos.x + pan.x}px, ${pos.y + pan.y}px, 0) rotate(${pos.r}deg);`
+				: ''}
 			aria-label={edition.name}
 			title={edition.name}
 		>
-			<img src={`/editions/${edition.coverImg}`} alt={edition.name} class="h-full w-full object-cover" />
+			<img
+				src={`/editions/${edition.coverImg}`}
+				alt={edition.name}
+				class="h-full w-full object-cover"
+			/>
+		</button>
+		<button
+			class="block md:hidden"
+			type="button"
+			onclick={() => {
+				currentEdition.set(edition);
+				isMenuOpen.set(true);
+			}}
+		>
+			<img
+				src={`/editions/${edition.coverImg}`}
+				alt={edition.name}
+				class="h-full w-full object-cover"
+			/>
 		</button>
 	{/each}
 </section>
