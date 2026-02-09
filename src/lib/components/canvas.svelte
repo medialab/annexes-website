@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { draggable } from '@thisux/sveltednd';
-	import { isMenuOpen, currentEdition } from '$lib/stores';
+	import { currentEdition, isFooterOpen, isFooterHovered } from '$lib/stores';
 	import type { Edition } from '$lib/types';
 
 	let { editions = [] } = $props<{ editions?: Edition[] }>();
@@ -145,6 +145,9 @@
 				attributes: { draggingClass: 'opacity-0' }
 			}}
 			ondragstart={setDragImage}
+			ondragend={() => ($isFooterOpen = false)}
+			onpointerdown={() => ($isFooterOpen = true)}
+			onpointerup={() => ($isFooterOpen = false)}
 			class="absolute top-0 left-0 hidden h-[320px] cursor-grab overflow-hidden rounded-xl bg-white/90 shadow-[0_12px_30px_rgba(15,23,42,0.16)] transition-all duration-50 active:cursor-grabbing md:block"
 			style={pos
 				? `transform: translate3d(${pos.x + pan.x}px, ${pos.y + pan.y}px, 0) rotate(${pos.r}deg);`
@@ -163,7 +166,6 @@
 			type="button"
 			onclick={() => {
 				currentEdition.set(edition);
-				isMenuOpen.set(true);
 			}}
 		>
 			<img

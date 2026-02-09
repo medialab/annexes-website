@@ -1,11 +1,9 @@
 <script lang="ts">
 	import type { MenuVariations } from '$lib/types';
-	import { currentEdition, isMenuOpen } from '$lib/stores';
+	import { currentPanel } from '$lib/stores';
 	import Button from './button.svelte';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
-
-	let currentPanel = $state<MenuVariations | null>('book');
 
 	import menuIcon from '$lib/assets/icons/burger.svg';
 	import closeIcon from '$lib/assets/icons/close.svg';
@@ -17,41 +15,56 @@
 	import MenuGallery from './menu_gallery.svelte';
 	import MenuReader from './menu_reader.svelte';
 	import Navigator from './navigator.svelte';
+	import { goto } from '$app/navigation';
+	import { editions } from '$lib/data/datasource';
+
+	let { currentEdition } = $props();
 </script>
 
-{#if $isMenuOpen}
-	<section
-		class="fixed z-10 flex h-screen w-screen items-center justify-center bg-[#F5F5F5] py-4"
-		transition:slide={{ duration: 500, easing: cubicOut, axis: 'y' }}
+<section
+	class="fixed z-10 flex h-screen w-screen items-center justify-center bg-[#F5F5F5] py-4"
+	transition:slide={{ duration: 500, easing: cubicOut, axis: 'y' }}
+>
+	<div
+		class="flex h-full w-full max-w-[60%] flex-row justify-center gap-4 text-[#444444] xl:max-w-[80%]"
 	>
-		<div class="flex h-full w-full max-w-[1200px] flex-row gap-4 text-[#444444]">
-			{#if currentPanel}
-				<Navigator {currentPanel}></Navigator>
-			{/if}
-			<div
-				id="viewer"
-				class="flex aspect-4/3 h-full w-full flex-col items-center justify-between rounded-2xl bg-white p-4 md:w-auto"
-			>
-				<header class="flex h-fit w-full items-center justify-between">
-					<Button label="Menu" icon={menuIcon} href="/"></Button>
-					<Button label="ARTIFICIAL INQUIRIES" href="/"></Button>
-					<Button label="Close" icon={closeIcon} href="/" onClick={() => ($isMenuOpen = false)}
-					></Button>
-				</header>
-				{#if currentPanel === 'book'}
-					<MenuBio currentEdition={$currentEdition} />
-				{:else if currentPanel === 'layout'}
-					<MenuLayout currentEdition={$currentEdition} />
-				{:else if currentPanel === 'gallery'}
-					<MenuGallery currentEdition={$currentEdition} />
-				{:else if currentPanel === 'reader'}
-					<MenuReader currentEdition={$currentEdition} />
+		{#if $currentPanel}
+			<Navigator></Navigator>
+		{/if}
+		<div
+			id="viewer"
+			class="flex h-full w-full flex-1 flex-col items-center justify-between rounded-2xl bg-white p-4"
+		>
+			<header class="flex h-fit w-full items-center justify-between">
+				{#if currentEdition}
+					<button
+						class="pill pointer-events-none border-1 border-dashed! border-neutral-500 bg-neutral-100 text-neutral-500"
+					>
+						<p>{currentEdition.name}</p>
+					</button>
 				{/if}
-				<footer class="hidden h-fit w-full items-center justify-between md:flex">
-					<Button label="Download" icon={downloadIcon} href="/"></Button>
-					<Button label="Share" icon={shareIcon} href="/"></Button>
-				</footer>
-			</div>
+				<Button
+					label="Close"
+					icon={closeIcon}
+					urgency="urgent"
+					onClick={() => {
+						goto('/');
+					}}
+				></Button>
+			</header>
+			{#if $currentPanel === 'book'}
+				<MenuBio {currentEdition} />
+			{:else if $currentPanel === 'layout'}
+				<MenuLayout {currentEdition} />
+			{:else if $currentPanel === 'gallery'}
+				<MenuGallery {currentEdition} />
+			{:else if $currentPanel === 'reader'}
+				<MenuReader {currentEdition} />
+			{/if}
+			<footer class="hidden h-fit w-full items-center justify-between md:flex">
+				<Button label="Download" icon={downloadIcon} href="/"></Button>
+				<Button label="Share" icon={shareIcon} href="/"></Button>
+			</footer>
 		</div>
-	</section>
-{/if}
+	</div>
+</section>

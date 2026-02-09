@@ -6,7 +6,7 @@
 </script>
 
 <header
-	class="fixed top-6 right-4 left-4 z-2 flex h-fit items-center justify-between rounded-2xl bg-white p-2 md:right-auto md:left-1/2 md:w-full md:max-w-[1200px] md:-translate-x-1/2"
+	class="fixed top-6 right-4 left-4 z-2 flex h-fit items-center justify-between rounded-2xl bg-white p-2 md:right-auto md:left-1/2 md:w-full md:max-w-[60%] md:-translate-x-1/2"
 >
 	<div class="hidden md:block">
 		<Button label="Home" icon={homeIcon} href="/"></Button>

@@ -1,22 +1,75 @@
+@font-face {
+	font-family: 'Ronzino';
+	src: url('/fonts/Ronzino-Regular.woff2') format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Ronzino';
+	src: url('/fonts/Ronzino-Medium.woff2') format('woff2');
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Ronzino';
+	src: url('/fonts/Ronzino-Bold.woff2') format('woff2');
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Ronzino';
+	src: url('/fonts/Ronzino-Oblique.woff2') format('woff2');
+	font-weight: 400;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Ronzino';
+	src: url('/fonts/Ronzino-MediumOblique.woff2') format('woff2');
+	font-weight: 500;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Ronzino';
+	src: url('/fonts/Ronzino-BoldOblique.woff2') format('woff2');
+	font-weight: 700;
+	font-style: italic;
+	font-display: swap;
+}
+
 @import 'tailwindcss';
-@plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+
+@layer statuses {
+	.urgent {
+		@apply border border-solid border-red-600 bg-red-100 text-red-700;
+	}
+
+	.semi-urgent {
+		@apply border border-solid border-orange-600 bg-orange-100 text-orange-700;
+	}
+
+	.resolved {
+		@apply border border-solid border-green-600 bg-green-100 text-green-700;
+	}
+
+	.pill:hover {
+		@apply invert-100 grayscale-100 transition-all duration-125 delay-75;
+	}
+}
 
 @layer base {
 	h1 {
 		@apply text-5xl leading-none md:text-8xl;
-	}
-
-	#hero-h1 {
-		@apply overflow-clip opacity-0 transition-opacity duration-300;
-	}
-
-	#hero-h1.ready {
-		@apply opacity-100;
-	}
-
-	#hero-h1.ready .split-word {
-		@apply opacity-0;
 	}
 
 	h2 {
@@ -36,38 +89,24 @@
 		@apply cursor-pointer hover:text-blue-500;
 	}
 
-	.urgent {
-		@apply border border-solid border-red-600 bg-red-300 text-red-700;
-	}
+	
 
 	.pill {
 		@apply flex w-fit place-items-center items-center justify-center gap-2 rounded-xl bg-[#F5F5F5] px-4 py-2 transition-all duration-7;
 	}
 
+	
+
 	.pill p {
 		@apply h-fit justify-self-center pt-px text-sm uppercase;
 	}
-
-	/*.pill:hover {
-    @apply border-blue-500 border-[1.5px] border-dashed;
-  }
-
-  .pill:active {
-    @apply bg-blue-200 border-blue-500 text-blue-500 scale-[98%] duration-75;
-  }*/
 
 	.pill img {
 		@apply h-4 w-auto;
 	}
 
-	.pill:hover img,
-	.pill:active img {
-		filter: brightness(0) invert(42%) sepia(93%) saturate(1352%) hue-rotate(208deg) brightness(119%)
-			contrast(119%);
-	}
-
 	.sharer_icon {
-		@apply flex aspect-square w-16 cursor-pointer items-center justify-center rounded-xl bg-gray-50 p-5 transition duration-150 ease-in-out hover:bg-[#cfcfcf] active:scale-95;
+		@apply flex aspect-square w-16 cursor-pointer items-center justify-center rounded-xl bg-neutral-50 p-5 transition duration-150 ease-in-out hover:bg-[#cfcfcf] active:scale-95;
 	}
 
 	* {
@@ -106,14 +145,6 @@
 
 	::selection {
 		@apply bg-[#3B82F6] text-white;
-	}
-
-	.main_container {
-		@apply relative flex h-full w-full flex-col items-center gap-32 overflow-y-scroll scroll-smooth bg-transparent outline-none md:gap-4;
-	}
-
-	.fullsize_section {
-		@apply relative z-[30] mt-6 flex h-fit w-full max-w-[1920px] snap-start items-center bg-transparent px-4 py-2 md:mt-52;
 	}
 
 	.hero {
