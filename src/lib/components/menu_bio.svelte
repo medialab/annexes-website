@@ -1,13 +1,22 @@
-<script>
+<script lang="ts">
 	let { currentEdition } = $props();
+	import { allMedias } from '$lib/stores';
+	import type { Edition } from '$lib/types';
+
+	function getEditionPages(edition: Edition, medias: Record<string, string>): string[] {
+		const normalizedName = edition.name.toLowerCase().replace(/ /g, '-');
+		const keys = Object.keys(medias).filter((k) => k.toLowerCase().includes(normalizedName));
+		console.log('keys', keys);
+		return keys.map((key) => medias[key]);
+	}
 </script>
 
 <main
-	class="my-4 flex min-h-0 w-full flex-1 flex-col gap-4 rounded-3xl border-2 border-solid border-neutral-200 bg-neutral-100 p-4 md:flex-row"
+	class="my-4 flex min-h-0 w-full flex-1 flex-row gap-4 rounded-3xl border-2 border-solid border-neutral-200 bg-neutral-100 p-4 md:flex-row"
 >
 	<div class="h-full w-full md:w-1/2" id="biography-card">
 		{#if currentEdition}
-			<div class="w flex h-full flex-col gap-6 overflow-y-scroll">
+			<div class="flex h-full flex-col gap-6 overflow-y-scroll">
 				<div class="flex flex-col gap-0">
 					<h2>{currentEdition.name}</h2>
 					<p>{currentEdition.subtitle}</p>
@@ -62,7 +71,11 @@
 			</div>
 		{/if}
 	</div>
-	<div class="w/1-2 h-full" id="timone">
-		<div class="flex h-full flex-row flex-wrap overflow-y-scroll p-4"></div>
+	<div class="h-full w-full md:w-1/2" id="timone">
+		<div class="flex h-full flex-row flex-wrap overflow-y-scroll p-4">
+			{#each getEditionPages(currentEdition, allMedias) as page}
+				<img src={page} alt="" class="h-auto w-full max-w-[10%] object-contain p-4" />
+			{/each}
+		</div>
 	</div>
 </main>

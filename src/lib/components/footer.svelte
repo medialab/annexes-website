@@ -3,7 +3,6 @@
 	import type { Edition, DropItem } from '$lib/types';
 	import { currentEdition, isFooterOpen, isFooterHovered } from '$lib/stores';
 	import { goto } from '$app/navigation';
-
 	const dropContainer = 'footer-dropzone';
 	let dropped = $state<DropItem[]>([]);
 

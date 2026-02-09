@@ -1,7 +1,6 @@
 export type Edition = {
     id: string;
     name: string;
-    coverImg: string;
     subtitle: string;
     publishingDate: string;
     isbn: string;

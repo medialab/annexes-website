@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { draggable } from '@thisux/sveltednd';
-	import { currentEdition, isFooterOpen, isFooterHovered } from '$lib/stores';
+	import { currentEdition, isFooterOpen, allMedias } from '$lib/stores';
 	import type { Edition } from '$lib/types';
 
 	let { editions = [] } = $props<{ editions?: Edition[] }>();
@@ -129,6 +129,15 @@
 		event.dataTransfer.setDragImage(ghost, offsetX, offsetY);
 		setTimeout(() => ghost.remove(), 0);
 	}
+
+	function getImageUrl(edition: Edition): string {
+		const normalizedName = edition.name.toLowerCase().replace(/ /g, '-');
+		const key = Object.keys(allMedias).find(
+			(k) => k.toLowerCase().includes(normalizedName) && k.toLowerCase().includes('thumb')
+		);
+		if (!key) return '';
+		return allMedias[key];
+	}
 </script>
 
 <section
@@ -155,11 +164,7 @@
 			aria-label={edition.name}
 			title={edition.name}
 		>
-			<img
-				src={`/editions/${edition.coverImg}`}
-				alt={edition.name}
-				class="h-full w-full object-cover"
-			/>
+			<img src={getImageUrl(edition)} alt={edition.name} class="h-full w-full object-cover" />
 		</button>
 		<button
 			class="block md:hidden"
@@ -168,11 +173,7 @@
 				currentEdition.set(edition);
 			}}
 		>
-			<img
-				src={`/editions/${edition.coverImg}`}
-				alt={edition.name}
-				class="h-full w-full object-cover"
-			/>
+			<img src={getImageUrl(edition)} alt={edition.name} class="h-full w-full object-cover" />
 		</button>
 	{/each}
 </section>

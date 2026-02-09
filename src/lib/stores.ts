@@ -8,3 +8,12 @@ export const currentPanel = writable<MenuVariations | null>('book');
 export const allEditions = writable<Edition[]>(editions);
 export const isFooterOpen = writable(false);
 export const isFooterHovered = writable(false);
+
+export const allMedias: Record<string, string> = import.meta.glob(
+    '$lib/media/editions/**/*.{jpg,jpeg,png}',
+    {
+        eager: true,
+        query: '?url',
+        import: 'default'
+    }
+);

@@ -10,7 +10,8 @@
 	let galleryEl: HTMLDivElement;
 	let currentPage = $state(1);
 	let totalPages = $state(0);
-	let pdfUrl = '/editions/test.pdf';
+
+	let pdfUrl = $derived(currentEdition ? `/editions/${currentEdition.name}.pdf` : '');
 
 	let pdfDocument: any = null;
 	let renderTask: any = null;

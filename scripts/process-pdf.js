@@ -1,17 +1,11 @@
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
 
-const PDFS_DIR = 'static/editions';
+const PDF_SOURCE_DIR = 'static/editions';
+const IMAGE_OUTPUT_DIR = 'src/lib/media/editions';
 const DATASOURCE_PATH = 'src/lib/data/datasource.ts';
 
-/**
- * Normalizes a string to be used as a filename/slug:
- * - Lowercase
- * - Remove accents
- * - Replace spaces with hyphens
- * - Remove special characters exception for . and -
- */
 function slugify(text) {
     return text
         .toString()
@@ -42,7 +36,7 @@ function getPdfMetadata(pdfPath) {
 }
 
 function processPdf(pdfPath, slug) {
-    const targetDir = path.join(PDFS_DIR, slug);
+    const targetDir = path.join(IMAGE_OUTPUT_DIR, slug);
 
     console.log(`Processing: ${pdfPath} -> ${targetDir}`);
 
@@ -53,6 +47,12 @@ function processPdf(pdfPath, slug) {
     // Split PDF into JPGs
     try {
         execSync(`pdftocairo -jpeg -origpagesize "${pdfPath}" "${path.join(targetDir, 'page')}"`);
+        const firstPage = path.join(targetDir, 'page-1.jpg');
+        const thumb = path.join(targetDir, 'thumb.jpg');
+        if (fs.existsSync(firstPage)) {
+            fs.copyFileSync(firstPage, thumb);
+            console.log(`Created thumb: ${thumb}`);
+        }
     } catch (e) {
         console.error(`Error splitting PDF ${pdfPath}:`, e);
         return null;
@@ -66,7 +66,6 @@ function processPdf(pdfPath, slug) {
     const newEdition = {
         id: new Date().getFullYear().toString(),
         name: slug,
-        coverImg: `${slug}/page-1.jpg`,
         subtitle: editionTitle,
         isbn: '-',
         description: '...',
@@ -126,10 +125,16 @@ function updateDatasource(newEditions) {
 
 function sync() {
     const { names: existingNames } = readDatasource();
-    const allFiles = fs.readdirSync(PDFS_DIR);
 
-    const pdfFiles = allFiles.filter(f => f.endsWith('.pdf'));
-    const assetFolders = allFiles.filter(f => fs.statSync(path.join(PDFS_DIR, f)).isDirectory());
+    // Ensure directories exist
+    if (!fs.existsSync(PDF_SOURCE_DIR)) fs.mkdirSync(PDF_SOURCE_DIR, { recursive: true });
+    if (!fs.existsSync(IMAGE_OUTPUT_DIR)) fs.mkdirSync(IMAGE_OUTPUT_DIR, { recursive: true });
+
+    const allPdfFiles = fs.readdirSync(PDF_SOURCE_DIR);
+    const allAssetFiles = fs.readdirSync(IMAGE_OUTPUT_DIR);
+
+    const pdfFiles = allPdfFiles.filter(f => f.endsWith('.pdf'));
+    const assetFolders = allAssetFiles.filter(f => fs.statSync(path.join(IMAGE_OUTPUT_DIR, f)).isDirectory());
 
     console.log('--- SYNC START ---');
     console.log('Existing in JSON:', existingNames);
@@ -148,7 +153,7 @@ function sync() {
 
         if (!existingNames.includes(slug)) {
             console.log(`[NEW PDF] Found ${file}, adding to datasource...`);
-            const data = processPdf(path.join(PDFS_DIR, file), slug);
+            const data = processPdf(path.join(PDF_SOURCE_DIR, file), slug);
             if (data) newEditionsData.push(data);
         } else {
             console.log(`[OK] ${file} already in datasource.`);
@@ -168,7 +173,7 @@ function sync() {
         const pdfExists = pdfFiles.some(f => slugify(path.basename(f, '.pdf')) === folder);
         if (!pdfExists) {
             console.warn(`[CLEANUP] Orphaned Asset Folder: '${folder}'. No matching PDF found. Deleting...`);
-            fs.rmSync(path.join(PDFS_DIR, folder), { recursive: true, force: true });
+            fs.rmSync(path.join(IMAGE_OUTPUT_DIR, folder), { recursive: true, force: true });
         }
     });
 

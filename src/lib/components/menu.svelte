@@ -1,11 +1,9 @@
 <script lang="ts">
-	import type { MenuVariations } from '$lib/types';
 	import { currentPanel } from '$lib/stores';
 	import Button from './button.svelte';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 
-	import menuIcon from '$lib/assets/icons/burger.svg';
 	import closeIcon from '$lib/assets/icons/close.svg';
 	import downloadIcon from '$lib/assets/icons/download.svg';
 	import shareIcon from '$lib/assets/icons/share.svg';
@@ -16,7 +14,6 @@
 	import MenuReader from './menu_reader.svelte';
 	import Navigator from './navigator.svelte';
 	import { goto } from '$app/navigation';
-	import { editions } from '$lib/data/datasource';
 
 	let { currentEdition } = $props();
 </script>
@@ -38,7 +35,7 @@
 			<header class="flex h-fit w-full items-center justify-between">
 				{#if currentEdition}
 					<button
-						class="pill pointer-events-none border-1 border-dashed! border-neutral-500 bg-neutral-100 text-neutral-500"
+						class="pill pointer-events-none border border-dashed! border-neutral-500 bg-neutral-100 text-neutral-500"
 					>
 						<p>{currentEdition.name}</p>
 					</button>

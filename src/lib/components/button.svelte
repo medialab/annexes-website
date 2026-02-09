@@ -21,6 +21,7 @@
 		class:semi-urgent={props?.urgency === 'semi-urgent'}
 		class:resolved={props?.urgency === 'resolved'}
 		onclick={props.onClick}
+		data-sveltekit-preload-data="hover"
 	>
 		{#if props.label}
 			<p>{props.label}</p>
