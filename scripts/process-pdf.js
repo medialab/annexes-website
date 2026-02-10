@@ -2,7 +2,7 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-const PDF_SOURCE_DIR = 'static/editions';
+const PDF_SOURCE_DIR = 'static/pdfs';
 const IMAGE_OUTPUT_DIR = 'src/lib/media/editions';
 const DATASOURCE_PATH = 'src/lib/data/datasource.ts';
 
@@ -72,7 +72,7 @@ function processPdf(pdfPath, slug) {
         publishingDate: date,
         coPublisher: metadata['Creator'] || '',
         coPublisherUrl: '',
-        downloadHref: `/editions/${path.basename(pdfPath)}`,
+        downloadHref: `/pdfs/${path.basename(pdfPath)}`,
         editors: [],
         designers: [],
         contributors: [],
