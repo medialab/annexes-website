@@ -35,4 +35,21 @@ export let editions: Edition[] = [
         keywords: [],
         parentProject: "",
         parentUrl: ""
+    },
+    {
+        id: "2026",
+        name: "artificial_inquiries_completecolor",
+        subtitle: "Artificial Inquiries - A Vademecum for Workers In the Age of AI",
+        isbn: "-",
+        description: "...",
+        publishingDate: "Mon Jan 12 11:19:00 2026 UTC",
+        coPublisher: "Adobe InDesign 21.0 (Macintosh)",
+        coPublisherUrl: "",
+        downloadHref: "/pdfs/Artificial_Inquiries_CompleteColor.pdf",
+        editors: [],
+        designers: [],
+        contributors: [],
+        keywords: [],
+        parentProject: "",
+        parentUrl: ""
     }]
