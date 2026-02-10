@@ -84,6 +84,14 @@ function processPdf(pdfPath, slug) {
     return newEdition;
 }
 
+function hasGeneratedPages(slug) {
+    const targetDir = path.join(IMAGE_OUTPUT_DIR, slug);
+    if (!fs.existsSync(targetDir)) return false;
+
+    const files = fs.readdirSync(targetDir);
+    return files.some(file => /^page-\d+\.jpg$/i.test(file));
+}
+
 function readDatasource() {
     let content = fs.readFileSync(DATASOURCE_PATH, 'utf8');
     // We try to extract the array content. This is brittle but works for the current structure.
@@ -156,7 +164,12 @@ function sync() {
             const data = processPdf(path.join(PDF_SOURCE_DIR, file), slug);
             if (data) newEditionsData.push(data);
         } else {
-            console.log(`[OK] ${file} already in datasource.`);
+            if (hasGeneratedPages(slug)) {
+                console.log(`[OK] ${file} already in datasource and page JPGs exist.`);
+            } else {
+                console.log(`[MISSING JPGS] ${file} is in datasource but page JPGs are missing. Re-generating...`);
+                processPdf(path.join(PDF_SOURCE_DIR, file), slug);
+            }
         }
     });
 
