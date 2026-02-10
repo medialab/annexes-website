@@ -46,6 +46,33 @@ function clearGeneratedPages(targetDir) {
     });
 }
 
+function getFirstGeneratedPagePath(targetDir) {
+    if (!fs.existsSync(targetDir)) return null;
+
+    const pageFiles = fs.readdirSync(targetDir)
+        .map(file => {
+            const match = file.match(/^page-(\d+)\.jpg$/i);
+            if (!match) return null;
+            return { file, pageNumber: Number(match[1]) };
+        })
+        .filter(Boolean)
+        .sort((a, b) => a.pageNumber - b.pageNumber);
+
+    if (pageFiles.length === 0) return null;
+    return path.join(targetDir, pageFiles[0].file);
+}
+
+function ensureThumbFromFirstPage(slug) {
+    const targetDir = path.join(IMAGE_OUTPUT_DIR, slug);
+    const firstPage = getFirstGeneratedPagePath(targetDir);
+    if (!firstPage) return false;
+
+    const thumb = path.join(targetDir, 'thumb.jpg');
+    fs.copyFileSync(firstPage, thumb);
+    console.log(`Created thumb: ${thumb}`);
+    return true;
+}
+
 function processPdf(pdfPath, slug, relativePdfPath) {
     const targetDir = path.join(IMAGE_OUTPUT_DIR, slug);
 
@@ -59,11 +86,8 @@ function processPdf(pdfPath, slug, relativePdfPath) {
     try {
         clearGeneratedPages(targetDir);
         execFileSync('pdftocairo', ['-jpeg', pdfPath, path.join(targetDir, 'page')]);
-        const firstPage = path.join(targetDir, 'page-1.jpg');
-        const thumb = path.join(targetDir, 'thumb.jpg');
-        if (fs.existsSync(firstPage)) {
-            fs.copyFileSync(firstPage, thumb);
-            console.log(`Created thumb: ${thumb}`);
+        if (!ensureThumbFromFirstPage(slug)) {
+            throw new Error(`No generated page JPGs found for ${slug} after conversion.`);
         }
     } catch (e) {
         console.error(`Error splitting PDF ${pdfPath}:`, e);
@@ -102,6 +126,11 @@ function hasGeneratedPages(slug) {
 
     const files = fs.readdirSync(targetDir);
     return files.some(file => /^page-\d+\.jpg$/i.test(file));
+}
+
+function hasThumb(slug) {
+    const targetDir = path.join(IMAGE_OUTPUT_DIR, slug);
+    return fs.existsSync(path.join(targetDir, 'thumb.jpg'));
 }
 
 function getPdfFilesRecursive(rootDir, currentDir = rootDir) {
@@ -197,6 +226,13 @@ function sync() {
         } else {
             if (hasGeneratedPages(slug)) {
                 console.log(`[OK] ${file} already in datasource and page JPGs exist.`);
+                if (!hasThumb(slug)) {
+                    console.log(`[MISSING THUMB] ${file} has pages but no thumb. Creating thumb...`);
+                    if (!ensureThumbFromFirstPage(slug)) {
+                        console.error(`[MISSING THUMB] Could not create thumb for ${file}.`);
+                        hasProcessingErrors = true;
+                    }
+                }
             } else {
                 console.log(`[MISSING JPGS] ${file} is in datasource but page JPGs are missing. Re-generating...`);
                 try {
