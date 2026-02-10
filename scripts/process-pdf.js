@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
@@ -20,7 +20,7 @@ function slugify(text) {
 
 function getPdfMetadata(pdfPath) {
     try {
-        const info = execSync(`pdfinfo "${pdfPath}"`, { encoding: 'utf8' });
+        const info = execFileSync('pdfinfo', [pdfPath], { encoding: 'utf8' });
         const metadata = {};
         info.split('\n').forEach(line => {
             const [key, ...valueParts] = line.split(':');
@@ -35,7 +35,18 @@ function getPdfMetadata(pdfPath) {
     }
 }
 
-function processPdf(pdfPath, slug) {
+function clearGeneratedPages(targetDir) {
+    if (!fs.existsSync(targetDir)) return;
+
+    const files = fs.readdirSync(targetDir);
+    files.forEach(file => {
+        if (/^page-\d+\.jpg$/i.test(file) || file.toLowerCase() === 'thumb.jpg') {
+            fs.rmSync(path.join(targetDir, file), { force: true });
+        }
+    });
+}
+
+function processPdf(pdfPath, slug, relativePdfPath) {
     const targetDir = path.join(IMAGE_OUTPUT_DIR, slug);
 
     console.log(`Processing: ${pdfPath} -> ${targetDir}`);
@@ -46,7 +57,8 @@ function processPdf(pdfPath, slug) {
 
     // Split PDF into JPGs
     try {
-        execSync(`pdftocairo -jpeg -origpagesizes "${pdfPath}" "${path.join(targetDir, 'page')}"`);
+        clearGeneratedPages(targetDir);
+        execFileSync('pdftocairo', ['-jpeg', pdfPath, path.join(targetDir, 'page')]);
         const firstPage = path.join(targetDir, 'page-1.jpg');
         const thumb = path.join(targetDir, 'thumb.jpg');
         if (fs.existsSync(firstPage)) {
@@ -55,7 +67,7 @@ function processPdf(pdfPath, slug) {
         }
     } catch (e) {
         console.error(`Error splitting PDF ${pdfPath}:`, e);
-        return null;
+        throw e;
     }
 
     // Prepare metadata
@@ -72,7 +84,7 @@ function processPdf(pdfPath, slug) {
         publishingDate: date,
         coPublisher: metadata['Creator'] || '',
         coPublisherUrl: '',
-        downloadHref: `/pdfs/${path.basename(pdfPath)}`,
+        downloadHref: `/${path.posix.join('pdfs', relativePdfPath.split(path.sep).join('/'))}`,
         editors: [],
         designers: [],
         contributors: [],
@@ -90,6 +102,25 @@ function hasGeneratedPages(slug) {
 
     const files = fs.readdirSync(targetDir);
     return files.some(file => /^page-\d+\.jpg$/i.test(file));
+}
+
+function getPdfFilesRecursive(rootDir, currentDir = rootDir) {
+    const entries = fs.readdirSync(currentDir, { withFileTypes: true });
+    const pdfFiles = [];
+
+    entries.forEach(entry => {
+        const fullPath = path.join(currentDir, entry.name);
+        if (entry.isDirectory()) {
+            pdfFiles.push(...getPdfFilesRecursive(rootDir, fullPath));
+            return;
+        }
+
+        if (entry.isFile() && entry.name.toLowerCase().endsWith('.pdf')) {
+            pdfFiles.push(path.relative(rootDir, fullPath));
+        }
+    });
+
+    return pdfFiles;
 }
 
 function readDatasource() {
@@ -138,37 +169,41 @@ function sync() {
     if (!fs.existsSync(PDF_SOURCE_DIR)) fs.mkdirSync(PDF_SOURCE_DIR, { recursive: true });
     if (!fs.existsSync(IMAGE_OUTPUT_DIR)) fs.mkdirSync(IMAGE_OUTPUT_DIR, { recursive: true });
 
-    const allPdfFiles = fs.readdirSync(PDF_SOURCE_DIR);
     const allAssetFiles = fs.readdirSync(IMAGE_OUTPUT_DIR);
 
-    const pdfFiles = allPdfFiles.filter(f => f.endsWith('.pdf'));
+    const pdfFiles = getPdfFilesRecursive(PDF_SOURCE_DIR);
     const assetFolders = allAssetFiles.filter(f => fs.statSync(path.join(IMAGE_OUTPUT_DIR, f)).isDirectory());
 
     console.log('--- SYNC START ---');
     console.log('Existing in JSON:', existingNames);
 
     let newEditionsData = [];
-    let processedSlugs = new Set();
+    let hasProcessingErrors = false;
 
     // 1. Check for new PDFs
     pdfFiles.forEach(file => {
         const rawName = path.basename(file, '.pdf');
         const slug = slugify(rawName);
-        processedSlugs.add(slug);
-
-        // Rename PDF if not normalized? 
-        // For now, we just use the slug for the 'name' and folder.
+        const pdfPath = path.join(PDF_SOURCE_DIR, file);
 
         if (!existingNames.includes(slug)) {
             console.log(`[NEW PDF] Found ${file}, adding to datasource...`);
-            const data = processPdf(path.join(PDF_SOURCE_DIR, file), slug);
-            if (data) newEditionsData.push(data);
+            try {
+                const data = processPdf(pdfPath, slug, file);
+                newEditionsData.push(data);
+            } catch (_) {
+                hasProcessingErrors = true;
+            }
         } else {
             if (hasGeneratedPages(slug)) {
                 console.log(`[OK] ${file} already in datasource and page JPGs exist.`);
             } else {
                 console.log(`[MISSING JPGS] ${file} is in datasource but page JPGs are missing. Re-generating...`);
-                processPdf(path.join(PDF_SOURCE_DIR, file), slug);
+                try {
+                    processPdf(pdfPath, slug, file);
+                } catch (_) {
+                    hasProcessingErrors = true;
+                }
             }
         }
     });
@@ -193,6 +228,10 @@ function sync() {
     if (newEditionsData.length > 0) {
         updateDatasource(newEditionsData);
         console.log(`Added ${newEditionsData.length} new entries to ${DATASOURCE_PATH}`);
+    }
+
+    if (hasProcessingErrors) {
+        throw new Error('One or more PDFs failed to process.');
     }
 
     console.log('--- SYNC END ---');
