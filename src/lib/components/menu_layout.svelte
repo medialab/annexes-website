@@ -1,7 +1,5 @@
 <script>
-    let {currentEdition} = $props();
+	let { currentEdition } = $props();
 </script>
 
-<main class="flex-1 flex flex-row gap-4 min-h-0 w-full my-4 rounded-3xl  p-4">
-    
-</main>
+<main class="my-4 flex min-h-0 w-full flex-1 flex-row gap-4 rounded-3xl p-4"></main>

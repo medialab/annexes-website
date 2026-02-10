@@ -6,6 +6,7 @@
 		icon?: string;
 		urgency?: 'urgent' | 'semi-urgent' | 'resolved';
 		onClick?: () => void;
+		download?: boolean;
 	}
 
 	let props: Props = $props();
@@ -22,6 +23,7 @@
 		class:resolved={props?.urgency === 'resolved'}
 		onclick={props.onClick}
 		data-sveltekit-preload-data="hover"
+		download={props.download}
 	>
 		{#if props.label}
 			<p>{props.label}</p>

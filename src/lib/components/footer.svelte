@@ -3,13 +3,15 @@
 	import type { Edition, DropItem } from '$lib/types';
 	import { currentEdition, isFooterOpen, isFooterHovered } from '$lib/stores';
 	import { goto } from '$app/navigation';
+	import { openPanel } from '$lib/stores';
+
 	const dropContainer = 'footer-dropzone';
 	let dropped = $state<DropItem[]>([]);
 
 	function handleDrop(state: DragDropState<Edition>) {
 		const { draggedItem } = state;
 		if (draggedItem) {
-			openMenu(draggedItem);
+			openPanel(draggedItem);
 		}
 	}
 
@@ -24,14 +26,6 @@
 
 	function handleDragLeave() {
 		$isFooterHovered = false;
-	}
-
-	function openMenu(edition: Edition) {
-		console.log('edition dropped:', edition);
-		$isFooterOpen = false;
-		goto(`/editions/${edition.name}`);
-		currentEdition.set(edition);
-		clearDropzone();
 	}
 </script>
 
