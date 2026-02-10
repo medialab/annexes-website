@@ -46,7 +46,7 @@ function processPdf(pdfPath, slug) {
 
     // Split PDF into JPGs
     try {
-        execSync(`pdftocairo -jpeg -origpagesize "${pdfPath}" "${path.join(targetDir, 'page')}"`);
+        execSync(`pdftocairo -jpeg -origpagesizes "${pdfPath}" "${path.join(targetDir, 'page')}"`);
         const firstPage = path.join(targetDir, 'page-1.jpg');
         const thumb = path.join(targetDir, 'thumb.jpg');
         if (fs.existsSync(firstPage)) {
@@ -103,7 +103,7 @@ function readDatasource() {
     let names = [];
     let m;
     while ((m = nameRegex.exec(editionsStr)) !== null) {
-        names.push(m[1]);
+        names.push(slugify(m[1]));
     }
 
     return { content, names, lastBracketIndex: closingBracket };
