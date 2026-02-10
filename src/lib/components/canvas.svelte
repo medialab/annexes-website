@@ -135,6 +135,7 @@
 		const key = Object.keys(allMedias).find(
 			(k) => k.toLowerCase().includes(normalizedName) && k.toLowerCase().includes('thumb')
 		);
+		console.log(key);
 		if (!key) return '';
 		return allMedias[key];
 	}
