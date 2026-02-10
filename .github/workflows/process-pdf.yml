@@ -3,7 +3,7 @@ name: Process New PDFs
 on:
   push:
     paths:
-      - 'static/editions/**'
+      - 'static/pdfs/**'
       - 'scripts/process-pdf.js'
   workflow_dispatch:
 
@@ -24,7 +24,7 @@ jobs:
         uses: tj-actions/changed-files@v44
         with:
           files: static/editions/**/*.pdf
-          separator: " "
+          separator: ' '
 
       - name: Install dependencies
         if: steps.changed-files.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
