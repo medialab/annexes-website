@@ -97,10 +97,12 @@
 				></Button>
 				{#if $currentPanel === 'book'}
 					<div class="flex w-full items-center justify-center">
-						<label class="pill w-2/5 gap-3 text-nowrap">
-							<p>Cols {gridColsNum}</p>
+						<label
+							class="flex w-2/5 flex-row items-center justify-center gap-3 rounded-xl bg-neutral-100 px-4 py-2 text-nowrap"
+						>
+							<p>Zoom x{gridColsNum}</p>
 							<input
-								class="h-1.5 w-full appearance-none rounded-full bg-blue-600 outline-none [&::-moz-range-thumb]:h-[0.9rem] [&::-moz-range-thumb]:w-[0.9rem] [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-700 [&::-moz-range-thumb]:bg-blue-400 [&::-moz-range-track]:h-1.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-blue-600 [&::-webkit-slider-thumb]:h-[0.9rem] [&::-webkit-slider-thumb]:w-[0.9rem] [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-700 [&::-webkit-slider-thumb]:bg-blue-400"
+								class="h-1.5 w-full appearance-none rounded-full bg-blue-600 px-4 outline-none [&::-moz-range-thumb]:h-[0.9rem] [&::-moz-range-thumb]:w-[0.9rem] [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-700 [&::-moz-range-thumb]:bg-blue-400 [&::-moz-range-track]:h-1.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-blue-600 [&::-webkit-slider-thumb]:h-[0.9rem] [&::-webkit-slider-thumb]:w-[0.9rem] [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-700 [&::-webkit-slider-thumb]:bg-blue-400"
 								type="range"
 								min="1"
 								max="10"

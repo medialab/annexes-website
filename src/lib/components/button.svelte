@@ -24,7 +24,7 @@
 		href={linkHref}
 		target={isExternal ? '_blank' : '_self'}
 		rel={isExternal ? 'noopener noreferrer' : undefined}
-		class="pill {props.icon && props.label ? 'px-4' : 'px-0'}"
+		class="pill {props.icon && props.label ? 'px-4' : 'px-2'}"
 		class:urgent={props?.urgency === 'urgent'}
 		class:semi-urgent={props?.urgency === 'semi-urgent'}
 		class:resolved={props?.urgency === 'resolved'}
@@ -41,7 +41,7 @@
 	</a>
 {:else}
 	<button
-		class="pill {props.icon && props.label ? 'px-4' : 'px-0'}"
+		class="pill {props.icon && props.label ? 'px-4' : 'px-2'}"
 		class:urgent={props?.urgency === 'urgent'}
 		class:semi-urgent={props?.urgency === 'semi-urgent'}
 		class:resolved={props?.urgency === 'resolved'}

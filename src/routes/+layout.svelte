@@ -4,10 +4,11 @@
 	import { isMobile } from '$lib/stores';
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
-	import { fly, scale, slide } from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 	import { page } from '$app/state';
 	import Canvas from '$lib/components/canvas.svelte';
 	import { allEditions } from '$lib/stores';
+	import CursorPill from '$lib/components/cursor_pill.svelte';
 
 	let { children } = $props();
 
@@ -36,3 +37,5 @@
 <div class="relative z-0 h-fit w-full md:fixed md:m-0 md:h-screen">
 	<Canvas editions={$allEditions}></Canvas>
 </div>
+
+<CursorPill></CursorPill>

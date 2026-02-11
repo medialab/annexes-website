@@ -7,7 +7,8 @@
 		openPanel,
 		hideFooter,
 		isTitleShowing,
-		currentEdition
+		currentEdition,
+		isCoverDragging
 	} from '$lib/stores';
 	import type { Edition } from '$lib/types';
 	import { cubicInOut } from 'svelte/easing';
@@ -327,14 +328,19 @@
 
 	function handleCoverDragStart(event: DragEvent) {
 		isDraggingCover = true;
+		$isCoverDragging = true;
 		$isFooterOpen = true;
 		syncFooterVisibility();
 		setDragImage(event);
 	}
 
 	function handleCoverDragEnd() {
-		if (!isDraggingCover) return;
+		if (!isDraggingCover) {
+			$isCoverDragging = false;
+			return;
+		}
 		isDraggingCover = false;
+		$isCoverDragging = false;
 		$isFooterOpen = false;
 		syncFooterVisibility();
 	}
@@ -352,6 +358,8 @@
 
 		return () => {
 			resizeObserver.disconnect();
+			isDraggingCover = false;
+			$isCoverDragging = false;
 		};
 	});
 
@@ -410,6 +418,7 @@
 		{@const coverImg = getEditionCover(edition.name)}
 		<button
 			type="button"
+			data-hover="Grab the cover!"
 			use:draggable={{
 				container: 'canvas',
 				dragData: edition,
