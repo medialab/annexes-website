@@ -46,7 +46,7 @@
 			<header class="flex h-fit w-full items-center justify-between">
 				{#if currentEdition}
 					<button
-						class="pill pointer-events-none hidden border border-dashed! border-neutral-500 bg-neutral-100 text-neutral-500 md:block"
+						class="pill blank pointer-events-none hidden border border-dashed! border-neutral-500 bg-neutral-100 text-neutral-500 md:block"
 					>
 						<p>{currentEdition.name}</p>
 					</button>
@@ -96,18 +96,20 @@
 					download={true}
 				></Button>
 				{#if $currentPanel === 'book'}
-					<label class="pill slider-pill">
-						<p>Cols {gridColsNum}</p>
-						<input
-							class="slider-range"
-							type="range"
-							min="1"
-							max="10"
-							step="1"
-							bind:value={gridColsNum}
-							aria-label="Number of grid columns"
-						/>
-					</label>
+					<div class="flex w-full items-center justify-center">
+						<label class="pill w-2/5 gap-3 text-nowrap">
+							<p>Cols {gridColsNum}</p>
+							<input
+								class="h-1.5 w-full appearance-none rounded-full bg-blue-600 outline-none [&::-moz-range-thumb]:h-[0.9rem] [&::-moz-range-thumb]:w-[0.9rem] [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-700 [&::-moz-range-thumb]:bg-blue-400 [&::-moz-range-track]:h-1.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-blue-600 [&::-webkit-slider-thumb]:h-[0.9rem] [&::-webkit-slider-thumb]:w-[0.9rem] [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-700 [&::-webkit-slider-thumb]:bg-blue-400"
+								type="range"
+								min="1"
+								max="10"
+								step="1"
+								bind:value={gridColsNum}
+								aria-label="Number of grid columns"
+							/>
+						</label>
+					</div>
 				{/if}
 				<Button label="Share" icon={shareIcon} href={homeHref}></Button>
 			</footer>
@@ -121,45 +123,3 @@
 		tabindex="0"
 	></button>
 </section>
-
-<style>
-	.slider-pill {
-		gap: 0.75rem;
-	}
-
-	.slider-range {
-		appearance: none;
-		-webkit-appearance: none;
-		width: 8rem;
-		height: 0.375rem;
-		border-radius: 9999px;
-		background: #2563eb;
-		outline: none;
-	}
-
-	.slider-range::-webkit-slider-thumb {
-		appearance: none;
-		-webkit-appearance: none;
-		width: 0.9rem;
-		height: 0.9rem;
-		border-radius: 9999px;
-		border: 2px solid #1d4ed8;
-		background: #60a5fa;
-		cursor: pointer;
-	}
-
-	.slider-range::-moz-range-track {
-		height: 0.375rem;
-		border-radius: 9999px;
-		background: #2563eb;
-	}
-
-	.slider-range::-moz-range-thumb {
-		width: 0.9rem;
-		height: 0.9rem;
-		border-radius: 9999px;
-		border: 2px solid #1d4ed8;
-		background: #60a5fa;
-		cursor: pointer;
-	}
-</style>

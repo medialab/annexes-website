@@ -74,7 +74,7 @@
 	}
 
 	.blank {
-		@apply border border-dashed border-neutral-600 bg-white;
+		@apply border border-dashed border-neutral-600 bg-white px-2;
 	}
 
 	.pill:hover {
@@ -105,7 +105,7 @@
 	}
 
 	.pill {
-		@apply flex w-fit place-items-center items-center justify-center gap-2 rounded-xl bg-[#F5F5F5] px-2 py-2 transition-all duration-7;
+		@apply flex w-fit place-items-center items-center justify-center gap-2 rounded-xl bg-[#F5F5F5]  py-2 transition-all duration-7;
 	}
 
 	.pill p {
