@@ -3,7 +3,7 @@ name: Build And Deploy (With PDF Sync)
 on:
   push:
     branches:
-      - development
+      - main
   workflow_dispatch:
 
 permissions:
