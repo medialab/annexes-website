@@ -11,13 +11,13 @@ export let editions: Edition[] = [
 		publishingDate: 'October 2025',
 		coPublisher: 'medialab Sciences Po',
 		coPublisherUrl: '',
-		downloadHref: '',
+		downloadHref: 'pdfs/Artificial Inquiries.pdf',
 		editors: ['Donato Ricci', 'Gabriel Alcaras', 'Zoe de Vries'],
 		designers: ['Tommaso Prinetti'],
 		contributors: ['Axel Meunier'],
 		keywords: ['Digital ethnography', 'participative methods'],
 		parentProject: 'Ecologies of LLM Practices ',
-		parentUrl: ''
+		parentUrl: 'https://ecologiesofllm.medialab.sciencespo.fr/'
 	},
 	{
 		id: '2026',
@@ -36,21 +36,21 @@ export let editions: Edition[] = [
 		parentProject: '',
 		parentUrl: ''
 	}
-,
-    {
-        id: "2026",
-        name: "fanzine_master_num",
-        subtitle: "fanzine_master_num",
-        isbn: "-",
-        description: "...",
-        publishingDate: "Tue Nov 19 14:24:47 2024 UTC",
-        coPublisher: "Adobe InDesign 18.3 (Macintosh)",
-        coPublisherUrl: "",
-        downloadHref: "pdfs/Fanzine_MASTER_NUM.pdf",
-        editors: [],
-        designers: [],
-        contributors: [],
-        keywords: [],
-        parentProject: "",
-        parentUrl: ""
-    }];
+	,
+	{
+		id: "2026",
+		name: "fanzine_master_num",
+		subtitle: "fanzine_master_num",
+		isbn: "-",
+		description: "...",
+		publishingDate: "Tue Nov 19 14:24:47 2024 UTC",
+		coPublisher: "Adobe InDesign 18.3 (Macintosh)",
+		coPublisherUrl: "",
+		downloadHref: "pdfs/Fanzine_MASTER_NUM.pdf",
+		editors: [],
+		designers: [],
+		contributors: [],
+		keywords: [],
+		parentProject: "",
+		parentUrl: ""
+	}];

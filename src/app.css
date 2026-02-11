@@ -74,11 +74,19 @@
 	}
 
 	.blank {
-		@apply border border-dashed border-neutral-600 bg-white px-2;
+		@apply bg-white border-dashed border-neutral-200 transition-all delay-75 duration-125 px-2;
+	}
+
+	.disabled {
+		@apply opacity-50 cursor-not-allowed;
+	}
+
+	.blank:hover {
+		@apply transition-all delay-75 duration-125 border-neutral-200 border-solid border;
 	}
 
 	.pill:hover {
-		@apply grayscale-100 invert-100 transition-all delay-75 duration-125;
+		@apply transition-all delay-75 duration-125;
 	}
 }
 
@@ -101,11 +109,11 @@
 
 	a,
 	button {
-		@apply cursor-pointer hover:text-blue-500;
+		@apply cursor-pointer;
 	}
 
 	.pill {
-		@apply flex w-fit place-items-center items-center justify-center gap-2 rounded-xl bg-[#F5F5F5]  py-2 transition-all duration-7;
+		@apply flex w-fit place-items-center items-center justify-center gap-2 rounded-xl bg-[#F5F5F5]  py-2 transition-all duration-7 border-neutral-200;
 	}
 
 	.pill p {
@@ -147,6 +155,10 @@
 		@apply inline-flex h-fit w-fit cursor-pointer border-none bg-transparent p-[2px] text-inherit no-underline;
 	}
 
+	a:hover, button:hover {
+		@apply underline underline-offset-2;
+	}
+
 	*,
 	::before,
 	::after {
@@ -164,6 +176,10 @@
 
 	img {
 		@apply object-contain transition-all duration-150 ease-in-out;
+	}
+
+	.viewer_main {
+		@apply relative md:my-4 grid overflow-hidden h-full min-h-0 w-full grid-cols-2 grid-rows-[2fr_0.1fr] md:grid-cols-[0.1fr_1fr_0.1fr] md:grid-rows-1 items-center rounded-3xl border-0 md:border-2 border-solid border-neutral-200 md:bg-neutral-100 bg-transparent 
 	}
 }
 

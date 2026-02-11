@@ -13,10 +13,14 @@
 		if (!url) return false;
 		return /^(?:[a-z]+:)?\/\//i.test(url) || url.startsWith('mailto:') || url.startsWith('tel:');
 	}
+
+	function preventAssetCopy(event: Event) {
+		event.preventDefault();
+	}
 </script>
 
 <main
-	class="my-4 flex h-full min-h-0 w-full flex-1 flex-col gap-12 overflow-x-hidden overflow-y-auto rounded-3xl border-2 border-solid border-neutral-200 bg-neutral-100 p-4 md:flex-row md:gap-4 md:overflow-hidden"
+	class="my-4 flex h-full min-h-0 w-full flex-1 flex-col gap-12 overflow-x-hidden overflow-y-auto p-0 md:flex-row md:gap-4 md:overflow-hidden md:rounded-3xl md:border-2 md:border-solid md:border-neutral-200 md:bg-neutral-100 md:p-4"
 >
 	<div
 		class="h-fit w-full overflow-visible md:h-full md:w-1/2 md:overflow-hidden"
@@ -24,7 +28,7 @@
 	>
 		{#if currentEdition}
 			<div class="flex h-fit flex-col gap-6 overflow-visible md:h-full md:overflow-y-auto">
-				<div class="flex flex-col gap-0">
+				<div class="hidden flex-col gap-0 md:flex">
 					<h1>{currentEdition.name}</h1>
 					<p>{currentEdition.subtitle}</p>
 				</div>
@@ -101,13 +105,21 @@
 				{#if pages.length === 0}
 					<p class="col-span-full text-sm text-neutral-500">No pages found.</p>
 				{:else}
-					{#each pages as page}
+					{#each pages as page, i}
 						<img
+							data-hover={`page-${i + 1}`}
+							id={`page-${i + 1}`}
 							src={page}
 							alt=""
 							loading="lazy"
 							decoding="async"
-							class="col-span-1 h-auto w-full bg-white object-contain transition-all duration-150 hover:border hover:border-neutral-200"
+							class="protected-image col-span-1 h-auto w-full bg-white object-contain transition-all duration-150 hover:rounded-xl"
+							draggable="false"
+							oncontextmenu={preventAssetCopy}
+							ondragstart={preventAssetCopy}
+							oncopy={preventAssetCopy}
+							oncut={preventAssetCopy}
+							onselectstart={preventAssetCopy}
 						/>
 					{/each}
 				{/if}
@@ -117,3 +129,11 @@
 		</div>
 	</div>
 </main>
+
+<style>
+	.protected-image {
+		-webkit-user-drag: none;
+		user-select: none;
+		-webkit-user-select: none;
+	}
+</style>
