@@ -36,4 +36,21 @@ export let editions: Edition[] = [
 		parentProject: '',
 		parentUrl: ''
 	}
-];
+,
+    {
+        id: "2026",
+        name: "fanzine_master_num",
+        subtitle: "fanzine_master_num",
+        isbn: "-",
+        description: "...",
+        publishingDate: "Tue Nov 19 14:24:47 2024 UTC",
+        coPublisher: "Adobe InDesign 18.3 (Macintosh)",
+        coPublisherUrl: "",
+        downloadHref: "pdfs/Fanzine_MASTER_NUM.pdf",
+        editors: [],
+        designers: [],
+        contributors: [],
+        keywords: [],
+        parentProject: "",
+        parentUrl: ""
+    }];
