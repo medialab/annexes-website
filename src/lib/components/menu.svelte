@@ -31,7 +31,7 @@
 <svelte:window onkeydown={(e) => e.key === 'Escape' && goto(homeHref)} />
 
 <section
-	class="fixed z-10 flex h-screen w-screen justify-start py-4 md:items-center md:justify-center lg:p-24"
+	class="fixed z-10 flex h-dvh w-screen justify-start py-4 md:items-center md:justify-center lg:p-24"
 	transition:slide={{ duration: 500, easing: cubicOut, axis: 'y' }}
 >
 	<div

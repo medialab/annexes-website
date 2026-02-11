@@ -447,7 +447,7 @@
 
 <section
 	bind:this={host}
-	class="group/canvas relative top-12 z-0 flex w-full flex-col items-center justify-center gap-12 overflow-y-scroll py-24 md:top-0 md:h-screen md:w-screen md:overflow-hidden md:py-0"
+	class="group/canvas relative top-12 z-0 flex w-full flex-col items-center justify-center gap-12 overflow-y-scroll py-24 md:top-0 md:h-dvh md:w-screen md:overflow-hidden md:py-0"
 >
 	{#each dummyEditions as edition, index}
 		{@const coverImg = getEditionCover(edition.name)}
@@ -487,7 +487,7 @@
 
 	{#if $isTitleShowing}
 		<div
-			class="pointer-events-none absolute z-0 flex h-screen w-screen items-center justify-center opacity-20"
+			class="pointer-events-none absolute z-0 flex h-dvh w-screen items-center justify-center opacity-20"
 		>
 			<h1 transition:fly={{ y: 12, duration: 150, easing: cubicInOut }}>
 				{$currentEdition?.name}
