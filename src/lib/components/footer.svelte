@@ -1,24 +1,27 @@
 <script lang="ts">
 	import { droppable, type DragDropState } from '@thisux/sveltednd';
-	import type { Edition, DropItem } from '$lib/types';
-	import { currentEdition, isFooterOpen, isFooterHovered, hideFooter } from '$lib/stores';
-	import { goto } from '$app/navigation';
+	import type { Edition } from '$lib/types';
+	import { isFooterOpen, isFooterHovered, hideFooter } from '$lib/stores';
 	import { openPanel } from '$lib/stores';
+	import { DND_FOOTER_CONTAINER, DND_SOURCE_CONTAINER } from '$lib/constants/dnd';
 	import { slide } from 'svelte/transition';
 	import { cubicInOut } from 'svelte/easing';
 
-	const dropContainer = 'footer-dropzone';
-	let dropped = $state<DropItem[]>([]);
+	const dropContainer = DND_FOOTER_CONTAINER;
 
-	function handleDrop(state: DragDropState<Edition>) {
-		const { draggedItem } = state;
-		if (draggedItem) {
-			openPanel(draggedItem);
-		}
+	function isEdition(value: unknown): value is Edition {
+		if (!value || typeof value !== 'object') return false;
+		const candidate = value as Partial<Edition>;
+		return typeof candidate.id === 'string' && typeof candidate.name === 'string';
 	}
 
-	function clearDropzone() {
-		dropped = [];
+	function handleDrop(state: DragDropState<Edition>) {
+		const { draggedItem, sourceContainer, targetContainer } = state;
+		if (sourceContainer !== DND_SOURCE_CONTAINER) return;
+		if (targetContainer !== DND_FOOTER_CONTAINER) return;
+		if (!isEdition(draggedItem)) return;
+
+		openPanel(draggedItem);
 	}
 
 	function handleDragEnter() {

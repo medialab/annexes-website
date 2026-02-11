@@ -3,13 +3,11 @@
 	import { currentPanel } from '$lib/stores';
 
 	import bookIcon from '$lib/assets/icons/book.svg';
-	import layoutIcon from '$lib/assets/icons/layout.svg';
 	import galleryIcon from '$lib/assets/icons/gallery.svg';
 	import readerIcon from '$lib/assets/icons/reader.svg';
 
 	const navItems: { panel: MenuVariations; icon: string; label: string }[] = [
 		{ panel: 'book', icon: bookIcon, label: 'Book' },
-		{ panel: 'layout', icon: layoutIcon, label: 'Layout' },
 		{ panel: 'gallery', icon: galleryIcon, label: 'Gallery' },
 		{ panel: 'reader', icon: readerIcon, label: 'Reader' }
 	];

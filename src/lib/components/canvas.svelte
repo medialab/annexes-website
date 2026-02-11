@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { draggable } from '@thisux/sveltednd';
+	import { draggable, type DragDropState } from '@thisux/sveltednd';
 	import {
 		isFooterOpen,
 		getEditionCover,
@@ -10,21 +10,14 @@
 		currentEdition,
 		isCoverDragging
 	} from '$lib/stores';
+	import { DND_SOURCE_CONTAINER } from '$lib/constants/dnd';
 	import type { Edition } from '$lib/types';
 	import { cubicInOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';
 
 	let { editions = [] } = $props<{ editions?: Edition[] }>();
 
-	let dummyEditions = $derived([
-		...editions,
-		...editions,
-		...editions,
-		...editions,
-		...editions,
-		...editions,
-		...editions
-	]);
+	let dummyEditions = $derived([...editions]);
 
 	type Placement = {
 		x: number;
@@ -48,6 +41,8 @@
 	let sceneBounds = $state<SceneBounds>({ minX: 0, maxX: 0, minY: 0, maxY: 0 });
 	let isHoveringCover = $state(false);
 	let isDraggingCover = $state(false);
+	let isNativeDragInProgress = false;
+	let dragGhostElement: HTMLElement | null = null;
 
 	const coverAspectRatio = 4 / 3;
 	const scenePadding = 36;
@@ -269,20 +264,50 @@
 	}
 
 	function handleWindowPointerUp() {
+		maybeEndPointerDrag();
 		handleCoverPointerUp();
 	}
 
 	function handleWindowPointerCancel() {
+		maybeEndPointerDrag();
 		handleCoverPointerUp();
 	}
 
 	function handleWindowDragEnd() {
-		handleCoverDragEnd();
+		handleNativeDragEnd();
 	}
 
 	function handleWindowBlur() {
-		handleCoverDragEnd();
+		handleNativeDragEnd();
 		resetMouse();
+	}
+
+	function beginCoverDrag() {
+		if (isDraggingCover) return;
+		isDraggingCover = true;
+		$isCoverDragging = true;
+		$isFooterOpen = true;
+		syncFooterVisibility();
+	}
+
+	function finishCoverDrag() {
+		isNativeDragInProgress = false;
+		if (!isDraggingCover) {
+			$isCoverDragging = false;
+			cleanupDragGhost();
+			return;
+		}
+
+		isDraggingCover = false;
+		$isCoverDragging = false;
+		$isFooterOpen = false;
+		syncFooterVisibility();
+		cleanupDragGhost();
+	}
+
+	function maybeEndPointerDrag() {
+		if (isNativeDragInProgress) return;
+		finishCoverDrag();
 	}
 
 	function syncFooterVisibility() {
@@ -326,23 +351,22 @@
 		}
 	}
 
-	function handleCoverDragStart(event: DragEvent) {
-		isDraggingCover = true;
-		$isCoverDragging = true;
-		$isFooterOpen = true;
-		syncFooterVisibility();
+	function handleDraggableStart(_state: DragDropState<Edition>) {
+		beginCoverDrag();
+	}
+
+	function handleDraggableEnd(_state: DragDropState<Edition>) {
+		finishCoverDrag();
+	}
+
+	function handleNativeDragStart(event: DragEvent) {
+		isNativeDragInProgress = true;
+		beginCoverDrag();
 		setDragImage(event);
 	}
 
-	function handleCoverDragEnd() {
-		if (!isDraggingCover) {
-			$isCoverDragging = false;
-			return;
-		}
-		isDraggingCover = false;
-		$isCoverDragging = false;
-		$isFooterOpen = false;
-		syncFooterVisibility();
+	function handleNativeDragEnd() {
+		finishCoverDrag();
 	}
 
 	onMount(() => {
@@ -358,8 +382,7 @@
 
 		return () => {
 			resizeObserver.disconnect();
-			isDraggingCover = false;
-			$isCoverDragging = false;
+			finishCoverDrag();
 		};
 	});
 
@@ -384,6 +407,8 @@
 		const target = event.currentTarget as HTMLElement | null;
 		if (!target) return;
 
+		cleanupDragGhost();
+
 		const rect = target.getBoundingClientRect();
 		const offsetX = event.clientX - rect.left;
 		const offsetY = event.clientY - rect.top;
@@ -396,9 +421,19 @@
 		ghost.style.left = '-9999px';
 		ghost.style.pointerEvents = 'none';
 		document.body.appendChild(ghost);
+		dragGhostElement = ghost;
 
-		event.dataTransfer.setDragImage(ghost, offsetX, offsetY);
-		setTimeout(() => ghost.remove(), 0);
+		try {
+			event.dataTransfer.setDragImage(ghost, offsetX, offsetY);
+		} catch {
+			cleanupDragGhost();
+		}
+	}
+
+	function cleanupDragGhost() {
+		if (!dragGhostElement) return;
+		dragGhostElement.remove();
+		dragGhostElement = null;
 	}
 </script>
 
@@ -420,19 +455,22 @@
 			type="button"
 			data-hover="Grab the cover!"
 			use:draggable={{
-				container: 'canvas',
+				container: DND_SOURCE_CONTAINER,
 				dragData: edition,
-				attributes: { draggingClass: 'opacity-0' }
+				attributes: { draggingClass: 'opacity-0' },
+				callbacks: {
+					onDragStart: handleDraggableStart,
+					onDragEnd: handleDraggableEnd
+				}
 			}}
-			ondragstart={handleCoverDragStart}
-			ondragend={handleCoverDragEnd}
+			ondragstart={handleNativeDragStart}
+			ondragend={handleNativeDragEnd}
 			onpointerdown={handleCoverPointerDown}
 			onpointerenter={() => handleCoverPointerEnter(index)}
 			onpointerleave={() => handleCoverPointerLeave(index)}
 			class="canvas-cover absolute hidden cursor-grab overflow-hidden rounded-md bg-white/90 opacity-100 transition-[opacity,box-shadow,left,top] duration-250 ease-out group-has-[.canvas-cover:hover]/canvas:opacity-10 hover:!opacity-100 hover:shadow-[0_12px_30px_rgba(15,23,42,0.16)] focus-visible:!opacity-100 active:cursor-grabbing md:block"
 			style={getDesktopStyle(index)}
 			aria-label={edition.name}
-			title={edition.name}
 		>
 			<img src={coverImg} alt={edition.name} class="h-full w-full object-contain" />
 		</button>
@@ -441,7 +479,6 @@
 			class="mx-12 block h-[250px] rounded-md bg-white/90 shadow-[0_12px_30px_rgba(15,23,42,0.16)] md:hidden"
 			type="button"
 			aria-label={edition.name}
-			title={edition.name}
 			onclick={() => openPanel(edition)}
 		>
 			<img src={coverImg} alt={edition.name} class="h-full w-auto object-contain" />

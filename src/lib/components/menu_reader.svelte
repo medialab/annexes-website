@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getEditionPages } from '$lib/stores';
+	import { isMobile } from '$lib/stores';
 
 	import arrowLeft from '$lib/assets/icons/arrowLeft.svg';
 	import arrowRight from '$lib/assets/icons/arrowRight.svg';
@@ -10,11 +11,15 @@
 	const pagesPromise = $derived(getEditionPages(currentEdition?.name ?? ''));
 
 	function nextPage(totalPages: number) {
-		if (currentPage + 2 < totalPages) currentPage += 2;
+		if (currentPage + 1 < totalPages) currentPage += 1;
 	}
 
 	function prevPage() {
-		if (currentPage - 2 >= 0) currentPage -= 2;
+		if (currentPage - 1 >= 0) currentPage -= 1;
+	}
+
+	function preventAssetCopy(event: Event) {
+		event.preventDefault();
 	}
 
 	$effect(() => {
@@ -23,53 +28,60 @@
 	});
 </script>
 
-<main
-	class="my-4 grid h-full min-h-0 w-full grid-cols-[0.1fr_1fr_0.1fr] gap-4 rounded-3xl bg-neutral-100 p-4 md:h-fit"
->
+<main class="viewer_main items-stretch">
 	{#await pagesPromise}
 		<div class="col-span-3 flex items-center justify-center">
 			<p class="text-sm text-neutral-500">Loading pages...</p>
 		</div>
 	{:then pages}
-		{@const visiblePages = pages.slice(currentPage, currentPage + 2)}
-
+		{@const pagesPerView = $isMobile ? 1 : 2}
+		{@const visiblePages = pages.slice(currentPage, currentPage + pagesPerView)}
 		<button
 			id="arrow_left"
-			class="col-span-1 h-full w-fit px-6 disabled:opacity-30"
+			class="col-start-1 row-start-2 flex h-full w-full items-center justify-center px-2 disabled:opacity-30 md:col-start-auto md:row-start-auto md:px-6"
 			onclick={prevPage}
 			disabled={currentPage <= 0}
+			data-hover="Previous page"
 		>
 			<img src={arrowLeft} alt="Arrow Left" class="" />
 		</button>
 
 		<div
 			id="gallery"
-			class="col-span-1 flex h-full w-full items-center justify-center overflow-hidden rounded-2xl"
+			class="col-span-2 flex h-full min-h-0 w-full items-stretch justify-center md:col-span-1"
 		>
 			{#if pages.length === 0}
 				<p class="text-sm text-neutral-500">No pages found.</p>
 			{:else}
-				<div class="grid h-full w-full grid-cols-1 gap-4 md:grid-cols-2">
+				<div class="grid h-full min-h-0 w-full grid-cols-1 items-stretch md:grid-cols-2">
 					{#each visiblePages as page}
-						<div class="flex h-full w-full items-center justify-center overflow-hidden rounded-md">
+						<div
+							class="col-span-1 flex h-full min-h-0 w-full items-center justify-center overflow-hidden py-4"
+						>
 							<img
 								src={page}
 								alt=""
 								loading="lazy"
 								decoding="async"
-								class="h-full w-auto object-contain shadow-xl"
+								class="protected-image h-full w-full overflow-clip rounded-xl object-contain"
+								draggable="false"
+								oncontextmenu={preventAssetCopy}
+								ondragstart={preventAssetCopy}
+								oncopy={preventAssetCopy}
+								oncut={preventAssetCopy}
+								onselectstart={preventAssetCopy}
 							/>
 						</div>
 					{/each}
 				</div>
 			{/if}
 		</div>
-
 		<button
 			id="arrow_right"
-			class="col-span-1 h-full w-fit px-6 disabled:opacity-30"
+			class="col-start-2 row-start-2 flex h-full w-full items-center justify-center px-2 disabled:opacity-30 md:col-start-auto md:row-start-auto md:px-6"
 			onclick={() => nextPage(pages.length)}
-			disabled={currentPage + 2 >= pages.length}
+			disabled={currentPage + 1 >= pages.length}
+			data-hover="Next page"
 		>
 			<img src={arrowRight} alt="Arrow Right" class="" />
 		</button>
@@ -79,3 +91,11 @@
 		</div>
 	{/await}
 </main>
+
+<style>
+	.protected-image {
+		-webkit-user-drag: none;
+		user-select: none;
+		-webkit-user-select: none;
+	}
+</style>
