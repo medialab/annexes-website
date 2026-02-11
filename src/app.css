@@ -73,6 +73,10 @@
 		@apply border border-solid border-green-600 bg-green-100 text-green-700;
 	}
 
+	.blank {
+		@apply border border-dashed border-neutral-600 bg-white;
+	}
+
 	.pill:hover {
 		@apply grayscale-100 invert-100 transition-all delay-75 duration-125;
 	}
