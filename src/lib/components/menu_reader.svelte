@@ -52,7 +52,13 @@
 				<div class="grid h-full w-full grid-cols-1 gap-4 md:grid-cols-2">
 					{#each visiblePages as page}
 						<div class="flex h-full w-full items-center justify-center overflow-hidden rounded-md">
-							<enhanced:img src={page} alt="" class="h-full w-auto object-contain shadow-xl" />
+							<img
+								src={page}
+								alt=""
+								loading="lazy"
+								decoding="async"
+								class="h-full w-auto object-contain shadow-xl"
+							/>
 						</div>
 					{/each}
 				</div>

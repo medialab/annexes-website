@@ -2,6 +2,7 @@
 	let { currentEdition, gridCols } = $props();
 	import { getEditionPages } from '$lib/stores';
 	import { asset } from '$app/paths';
+	const pagesPromise = $derived(getEditionPages(currentEdition?.name ?? ''));
 
 	function toAssetHref(pathname?: string) {
 		if (!pathname) return '';
@@ -17,7 +18,10 @@
 <main
 	class="my-4 flex h-auto min-h-0 w-full flex-1 flex-col gap-4 overflow-x-hidden overflow-y-auto rounded-3xl border-2 border-solid border-neutral-200 bg-neutral-100 p-4 md:h-full md:flex-row md:overflow-hidden"
 >
-	<div class="h-fit w-full overflow-visible md:h-full md:w-1/2 md:overflow-hidden" id="biography-card">
+	<div
+		class="h-fit w-full overflow-visible md:h-full md:w-1/2 md:overflow-hidden"
+		id="biography-card"
+	>
 		{#if currentEdition}
 			<div class="flex h-fit flex-col gap-6 overflow-visible md:h-full md:overflow-y-auto">
 				<div class="flex flex-col gap-0">
@@ -86,7 +90,6 @@
 			</div>
 		{/if}
 	</div>
-	<!--
 	<div class="h-full w-full md:w-1/2" id="timone">
 		<div
 			class="grid h-fit gap-2 overflow-y-scroll p-0 pb-8 md:h-full md:overflow-hidden md:p-4 md:pb-0"
@@ -99,9 +102,11 @@
 					<p class="col-span-full text-sm text-neutral-500">No pages found.</p>
 				{:else}
 					{#each pages as page}
-						<enhanced:img
+						<img
 							src={page}
 							alt=""
+							loading="lazy"
+							decoding="async"
 							class="col-span-1 h-auto w-full bg-white object-contain transition-all duration-150 hover:border hover:border-neutral-200"
 						/>
 					{/each}
@@ -110,5 +115,5 @@
 				<p class="col-span-full text-sm text-red-500">Could not load pages.</p>
 			{/await}
 		</div>
-	</div>-->
+	</div>
 </main>

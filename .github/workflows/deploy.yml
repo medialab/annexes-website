@@ -42,7 +42,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Process PDFs
-        run: node scripts/process-pdf.js
+        run: bun scripts/process-pdf.js
 
       - name: Commit PDF-generated changes (if any)
         run: |

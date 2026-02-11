@@ -19,11 +19,12 @@ const coverModules = import.meta.glob<string>('$lib/media/editions/**/thumb.{jpg
 });
 
 const pageModules = import.meta.glob<string>('$lib/media/editions/**/page-*.{jpg,jpeg,png}', {
-    query: { enhanced: true },
     import: 'default'
 });
 
-function normalizeEditionKey(value: string): string {
+function normalizeEditionKey(value?: string | null): string {
+    if (!value) return '';
+
     return value
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
@@ -52,12 +53,12 @@ for (const [key, url] of Object.entries(coverModules)) {
 
 const editionPagesCache = new Map<string, Promise<string[]>>();
 
-export function getEditionCover(editionName: string): string {
+export function getEditionCover(editionName?: string | null): string {
     const normalizedName = normalizeEditionKey(editionName);
     return editionCoverIndex[normalizedName] ?? '';
 }
 
-export async function getEditionPages(editionName: string): Promise<string[]> {
+export async function getEditionPages(editionName?: string | null): Promise<string[]> {
     const normalizedName = normalizeEditionKey(editionName);
     if (!normalizedName) return [];
 
