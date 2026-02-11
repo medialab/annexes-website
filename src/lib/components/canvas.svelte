@@ -404,7 +404,7 @@
 
 <section
 	bind:this={host}
-	class="group/canvas relative top-12 z-0 flex w-full flex-col items-center justify-center gap-12 overflow-y-scroll md:top-0 md:h-screen md:w-screen md:overflow-hidden"
+	class="group/canvas relative top-12 z-0 flex w-full flex-col items-center justify-center gap-12 overflow-y-scroll py-24 md:top-0 md:h-screen md:w-screen md:overflow-hidden md:py-0"
 >
 	{#each dummyEditions as edition, index}
 		{@const coverImg = getEditionCover(edition.name)}

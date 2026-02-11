@@ -33,6 +33,6 @@
 	</main>
 {/key}
 
-<div class="relative z-0 mt-24 h-fit w-full md:fixed md:m-0 md:h-screen">
+<div class="relative z-0 h-fit w-full md:fixed md:m-0 md:h-screen">
 	<Canvas editions={$allEditions}></Canvas>
 </div>

@@ -8,7 +8,7 @@
 </script>
 
 <main
-	class="my-4 grid h-fit min-h-0 w-full grid-cols-[0.1fr_1fr_0.1fr] items-center gap-4 rounded-3xl border-2 border-solid border-neutral-200 bg-neutral-100 p-4"
+	class="my-4 grid h-full min-h-0 w-full grid-cols-[0.1fr_1fr_0.1fr] items-center gap-4 rounded-3xl border-2 border-solid border-neutral-200 bg-neutral-100 p-4 md:h-fit"
 >
 	<button id="arrow_left" class="col-span-1 h-full w-fit px-6">
 		<img src={arrowLeft} alt="Arrow Left" class="" />

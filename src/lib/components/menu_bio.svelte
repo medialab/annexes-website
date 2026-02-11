@@ -1,6 +1,17 @@
 <script lang="ts">
 	let { currentEdition, gridCols } = $props();
 	import { getEditionPages } from '$lib/stores';
+	import { asset } from '$app/paths';
+
+	function toAssetHref(pathname?: string) {
+		if (!pathname) return '';
+		return asset(pathname.startsWith('/') ? pathname : `/${pathname}`);
+	}
+
+	function isExternalHref(url?: string) {
+		if (!url) return false;
+		return /^(?:[a-z]+:)?\/\//i.test(url) || url.startsWith('mailto:') || url.startsWith('tel:');
+	}
 </script>
 
 <main
@@ -33,9 +44,13 @@
 					</div>
 					<div class="grid grid-cols-[0.3fr_1fr] items-center gap-2">
 						<p class="col-span-1 text-sm text-neutral-400 uppercase">download</p>
-						<a href={currentEdition.downloadHref}>
-							<p class="col-span-1">{currentEdition.downloadHref}</p>
-						</a>
+						{#if currentEdition.downloadHref}
+							<a href={toAssetHref(currentEdition.downloadHref)}>
+								<p class="col-span-1">{currentEdition.downloadHref}</p>
+							</a>
+						{:else}
+							<p class="col-span-1">-</p>
+						{/if}
 					</div>
 					<div class="grid grid-cols-[0.3fr_1fr] items-center gap-2">
 						<p class="col-span-1 text-sm text-neutral-400 uppercase">editors</p>
@@ -55,9 +70,17 @@
 					</div>
 					<div class="grid grid-cols-[0.3fr_1fr] items-center gap-2">
 						<p class="col-span-1 text-sm text-neutral-400 uppercase">part of</p>
-						<a href={currentEdition.parentUrl}>
+						{#if currentEdition.parentUrl}
+							<a
+								href={isExternalHref(currentEdition.parentUrl)
+									? currentEdition.parentUrl
+									: toAssetHref(currentEdition.parentUrl)}
+							>
+								<p class="col-span-1">{currentEdition.parentProject}</p>
+							</a>
+						{:else}
 							<p class="col-span-1">{currentEdition.parentProject}</p>
-						</a>
+						{/if}
 					</div>
 				</div>
 			</div>
