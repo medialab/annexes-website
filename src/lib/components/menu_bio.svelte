@@ -92,7 +92,7 @@
 	</div>
 	<div class="h-full w-full md:w-1/2" id="timone">
 		<div
-			class="grid h-fit gap-2 overflow-y-scroll p-0 pb-8 md:h-full md:overflow-hidden md:p-4 md:pb-0"
+			class="grid h-full gap-2 overflow-y-scroll p-0 pb-8 md:h-full md:p-4 md:pb-0"
 			style={`grid-template-columns: repeat(${gridCols}, minmax(0, 1fr));`}
 		>
 			{#await pagesPromise}
