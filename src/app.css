@@ -1,0 +1,174 @@
+@font-face {
+	font-family: 'Ronzino';
+	src: url('/fonts/Ronzino-Regular.woff2') format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Ronzino';
+	src: url('/fonts/Ronzino-Medium.woff2') format('woff2');
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Ronzino';
+	src: url('/fonts/Ronzino-Bold.woff2') format('woff2');
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Ronzino';
+	src: url('/fonts/Ronzino-Oblique.woff2') format('woff2');
+	font-weight: 400;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Ronzino';
+	src: url('/fonts/Ronzino-MediumOblique.woff2') format('woff2');
+	font-weight: 500;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Ronzino';
+	src: url('/fonts/Ronzino-BoldOblique.woff2') format('woff2');
+	font-weight: 700;
+	font-style: italic;
+	font-display: swap;
+}
+
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@theme {
+	--font-sans: 'Ronzino',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		Helvetica,
+		Arial,
+		sans-serif;
+}
+
+@layer statuses {
+	.urgent {
+		@apply border border-solid border-red-600 bg-red-100 text-red-700;
+	}
+
+	.semi-urgent {
+		@apply border border-solid border-orange-600 bg-orange-100 text-orange-700;
+	}
+
+	.resolved {
+		@apply border border-solid border-green-600 bg-green-100 text-green-700;
+	}
+
+	.pill:hover {
+		@apply grayscale-100 invert-100 transition-all delay-75 duration-125;
+	}
+}
+
+@layer base {
+	h1 {
+		@apply text-5xl leading-none md:text-8xl;
+	}
+
+	h2 {
+		@apply text-xl leading-none md:text-3xl;
+	}
+
+	h3 {
+		@apply text-lg leading-none md:text-xl;
+	}
+
+	p {
+		@apply text-base leading-[140%];
+	}
+
+	a,
+	button {
+		@apply cursor-pointer hover:text-blue-500;
+	}
+
+	.pill {
+		@apply flex w-fit place-items-center items-center justify-center gap-2 rounded-xl bg-[#F5F5F5] px-2 py-2 transition-all duration-7;
+	}
+
+	.pill p {
+		@apply h-fit justify-self-center pt-px text-sm uppercase;
+	}
+
+	.pill img {
+		@apply h-4 w-auto;
+	}
+
+	.sharer_icon {
+		@apply flex aspect-square w-16 cursor-pointer items-center justify-center rounded-xl bg-neutral-50 p-5 transition duration-150 ease-in-out hover:bg-[#cfcfcf] active:scale-95;
+	}
+
+	* {
+		@apply m-0 p-0;
+	}
+
+	html {
+		@apply min-h-full w-full overflow-hidden font-sans transition-all duration-150 ease-in-out;
+	}
+
+	body {
+		@apply min-h-full w-full overflow-x-hidden overflow-y-hidden font-sans;
+	}
+
+	p {
+		@apply w-fit font-sans text-base font-normal tracking-[-0.03em] no-underline decoration-from-font md:text-base lg:text-lg;
+		text-underline-position: from-font;
+		text-decoration-skip-ink: none;
+	}
+
+	b {
+		@apply font-medium;
+	}
+
+	button,
+	a {
+		@apply inline-flex h-fit w-fit cursor-pointer border-none bg-transparent p-[2px] text-inherit no-underline;
+	}
+
+	*,
+	::before,
+	::after {
+		@apply m-0 p-0;
+		text-wrap-style: pretty;
+	}
+
+	::selection {
+		@apply bg-[#3B82F6] text-white;
+	}
+
+	.hero {
+		@apply mt-0 min-h-dvh md:mt-0;
+	}
+
+	img {
+		@apply object-contain transition-all duration-150 ease-in-out;
+	}
+}
+
+img {
+	-webkit-user-drag: none;
+	user-drag: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	object-position: center;
+}

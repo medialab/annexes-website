@@ -13,13 +13,23 @@
 		"lint": "prettier --check .",
 		"format": "prettier --write ."
 	},
+	"dependencies": {
+		"@thisux/sveltednd": "^0.0.20",
+		"canvas": "^3.2.1",
+		"pdf-viewer": "^0.8.1",
+		"pdfjs-dist": "^5.4.624",
+		"svelte-device-info": "^1.0.6",
+		"svelte-pdf": "^2.0.2"
+	},
 	"devDependencies": {
 		"@sveltejs/adapter-static": "^3.0.10",
+		"@sveltejs/enhanced-img": "^0.10.0",
 		"@sveltejs/kit": "^2.50.1",
 		"@sveltejs/vite-plugin-svelte": "^6.2.4",
 		"@tailwindcss/forms": "^0.5.11",
 		"@tailwindcss/typography": "^0.5.19",
 		"@tailwindcss/vite": "^4.1.18",
+		"@types/node": "^25.2.2",
 		"prettier": "^3.8.1",
 		"prettier-plugin-svelte": "^3.4.1",
 		"prettier-plugin-tailwindcss": "^0.7.2",
@@ -27,6 +37,7 @@
 		"svelte-check": "^4.3.5",
 		"tailwindcss": "^4.1.18",
 		"typescript": "^5.9.3",
-		"vite": "^7.3.1"
+		"vite": "^7.3.1",
+		"vite-plugin-image-optimizer": "^2.0.3"
 	}
 }
