@@ -20,12 +20,14 @@
 	let gridColsNum = $state(5);
 </script>
 
+<svelte:window onkeydown={(e) => e.key === 'Escape' && goto('/')} />
+
 <section
-	class="fixed z-10 flex h-screen w-screen items-center justify-center bg-[#F5F5F5] py-4"
+	class="fixed z-10 flex h-screen w-screen items-center justify-center py-4"
 	transition:slide={{ duration: 500, easing: cubicOut, axis: 'y' }}
 >
 	<div
-		class="flex h-full w-full flex-col-reverse justify-center gap-4 px-4 text-[#444444] md:max-w-[60%] md:flex-row md:px-0 xl:max-w-[80%]"
+		class="z-2 flex h-full w-full flex-col-reverse justify-center gap-4 px-4 text-[#444444] md:max-w-[60%] md:flex-row md:px-0 xl:max-w-[80%]"
 	>
 		{#if $currentPanel}
 			<Navigator></Navigator>
@@ -104,6 +106,13 @@
 			</footer>
 		</div>
 	</div>
+	<button
+		id="bg_drop"
+		class="fixed z-0 h-full w-full cursor-alias bg-[#F5F5F5] opacity-80"
+		onclick={() => goto('/')}
+		aria-label="Close menu"
+		tabindex="0"
+	></button>
 </section>
 
 <style>
