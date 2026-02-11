@@ -24,7 +24,7 @@
 </script>
 
 <main
-	class="my-4 grid h-fit min-h-0 w-full grid-cols-[0.1fr_1fr_0.1fr] gap-4 rounded-3xl bg-neutral-100 p-4"
+	class="my-4 grid h-full min-h-0 w-full grid-cols-[0.1fr_1fr_0.1fr] gap-4 rounded-3xl bg-neutral-100 p-4 md:h-fit"
 >
 	{#await pagesPromise}
 		<div class="col-span-3 flex items-center justify-center">
@@ -49,7 +49,7 @@
 			{#if pages.length === 0}
 				<p class="text-sm text-neutral-500">No pages found.</p>
 			{:else}
-				<div class="grid h-full w-full grid-cols-2 gap-4">
+				<div class="grid h-full w-full grid-cols-1 gap-4 md:grid-cols-2">
 					{#each visiblePages as page}
 						<div class="flex h-full w-full items-center justify-center overflow-hidden rounded-md">
 							<enhanced:img src={page} alt="" class="h-full w-auto object-contain shadow-xl" />

@@ -28,7 +28,7 @@ export let editions: Edition[] = [
 		publishingDate: 'Wed Dec 17 18:24:17 2025 CET',
 		coPublisher: 'Adobe InDesign 21.0 (Macintosh)',
 		coPublisherUrl: '',
-		downloadHref: '/pdfs/SEMIDEF_DATAMERGE.pdf',
+		downloadHref: 'pdfs/SEMIDEF_DATAMERGE.pdf',
 		editors: [],
 		designers: [],
 		contributors: [],

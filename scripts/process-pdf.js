@@ -108,7 +108,7 @@ function processPdf(pdfPath, slug, relativePdfPath) {
         publishingDate: date,
         coPublisher: metadata['Creator'] || '',
         coPublisherUrl: '',
-        downloadHref: `/${path.posix.join('pdfs', relativePdfPath.split(path.sep).join('/'))}`,
+        downloadHref: `${path.posix.join('pdfs', relativePdfPath.split(path.sep).join('/'))}`,
         editors: [],
         designers: [],
         contributors: [],

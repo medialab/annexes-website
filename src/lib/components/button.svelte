@@ -10,13 +10,20 @@
 	}
 
 	let props: Props = $props();
+	const linkHref = $derived(props.href ?? props.url ?? '');
+
+	function isExternalLink(url: string) {
+		return /^(?:[a-z]+:)?\/\//i.test(url) || url.startsWith('mailto:') || url.startsWith('tel:');
+	}
+
+	const isExternal = $derived(isExternalLink(linkHref));
 </script>
 
 {#if props.href || props.url}
 	<a
-		href={props.href ?? props.url}
-		target={props.href ? '_self' : '_blank'}
-		rel="noopener noreferrer"
+		href={linkHref}
+		target={isExternal ? '_blank' : '_self'}
+		rel={isExternal ? 'noopener noreferrer' : undefined}
 		class="pill"
 		class:urgent={props?.urgency === 'urgent'}
 		class:semi-urgent={props?.urgency === 'semi-urgent'}

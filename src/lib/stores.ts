@@ -2,6 +2,7 @@ import { writable } from 'svelte/store';
 import type { Edition, MenuVariations } from './types';
 import { editions } from './data/datasource';
 import { goto } from '$app/navigation';
+import { resolve } from '$app/paths';
 
 export const currentEdition = writable<Edition | null>(editions[0]);
 export const isMobile = writable(false);
@@ -91,6 +92,6 @@ export async function getEditionPages(editionName: string): Promise<string[]> {
 export function openPanel(edition: Edition) {
     console.log('edition dropped:', edition);
     isFooterOpen.set(false);
-    goto(`/editions/${edition.name}`);
+    goto(resolve(`/editions/${edition.name}`));
     currentEdition.set(edition);
 }

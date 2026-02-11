@@ -14,13 +14,20 @@
 	import MenuReader from './menu_reader.svelte';
 	import Navigator from './navigator.svelte';
 	import { goto } from '$app/navigation';
+	import { asset, resolve } from '$app/paths';
 
 	let { currentEdition } = $props();
 
 	let gridColsNum = $state(5);
+	const homeHref = resolve('/');
+
+	function toAssetHref(pathname?: string) {
+		if (!pathname) return undefined;
+		return asset(pathname.startsWith('/') ? pathname : `/${pathname}`);
+	}
 </script>
 
-<svelte:window onkeydown={(e) => e.key === 'Escape' && goto('/')} />
+<svelte:window onkeydown={(e) => e.key === 'Escape' && goto(homeHref)} />
 
 <section
 	class="fixed z-10 flex h-screen w-screen items-center justify-center py-4"
@@ -47,7 +54,7 @@
 						<Button
 							label="Download"
 							icon={downloadIcon}
-							url={currentEdition?.downloadHref}
+							url={toAssetHref(currentEdition?.downloadHref)}
 							download={true}
 						></Button>
 					</div>
@@ -58,7 +65,7 @@
 						icon={closeIcon}
 						urgency="urgent"
 						onClick={() => {
-							goto('/');
+							goto(homeHref);
 						}}
 					></Button>
 				</div>
@@ -67,7 +74,7 @@
 						icon={closeIcon}
 						urgency="urgent"
 						onClick={() => {
-							goto('/');
+							goto(homeHref);
 						}}
 					></Button>
 				</div>
@@ -85,7 +92,7 @@
 				<Button
 					label="Download"
 					icon={downloadIcon}
-					url={currentEdition?.downloadHref}
+					url={toAssetHref(currentEdition?.downloadHref)}
 					download={true}
 				></Button>
 				{#if $currentPanel === 'book'}
@@ -102,14 +109,14 @@
 						/>
 					</label>
 				{/if}
-				<Button label="Share" icon={shareIcon} href="/"></Button>
+				<Button label="Share" icon={shareIcon} href={homeHref}></Button>
 			</footer>
 		</div>
 	</div>
 	<button
 		id="bg_drop"
 		class="fixed z-0 h-full w-full cursor-alias bg-[#F5F5F5] opacity-80"
-		onclick={() => goto('/')}
+		onclick={() => goto(homeHref)}
 		aria-label="Close menu"
 		tabindex="0"
 	></button>
