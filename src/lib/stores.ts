@@ -12,6 +12,7 @@ export let isFooterOpen = writable(false);
 export const hideFooter = writable(true);
 export const isFooterHovered = writable(false);
 export const isTitleShowing = writable(false);
+export const isCoverDragging = writable(false);
 
 const coverModules = import.meta.glob<string>('$lib/media/editions/**/thumb.{jpg,jpeg,png}', {
     eager: true,

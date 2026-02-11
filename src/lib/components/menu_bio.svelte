@@ -16,7 +16,7 @@
 </script>
 
 <main
-	class="my-4 flex h-auto min-h-0 w-full flex-1 flex-col gap-4 overflow-x-hidden overflow-y-auto rounded-3xl border-2 border-solid border-neutral-200 bg-neutral-100 p-4 md:h-full md:flex-row md:overflow-hidden"
+	class="my-4 flex h-full min-h-0 w-full flex-1 flex-col gap-12 overflow-x-hidden overflow-y-auto rounded-3xl border-2 border-solid border-neutral-200 bg-neutral-100 p-4 md:flex-row md:gap-4 md:overflow-hidden"
 >
 	<div
 		class="h-fit w-full overflow-visible md:h-full md:w-1/2 md:overflow-hidden"
@@ -25,28 +25,28 @@
 		{#if currentEdition}
 			<div class="flex h-fit flex-col gap-6 overflow-visible md:h-full md:overflow-y-auto">
 				<div class="flex flex-col gap-0">
-					<h2>{currentEdition.name}</h2>
+					<h1>{currentEdition.name}</h1>
 					<p>{currentEdition.subtitle}</p>
 				</div>
 				<p class="md:line-clamp-12">{currentEdition.description}</p>
 				<div class="flex-col gap-2 md:flex">
-					<div class="grid grid-cols-[0.3fr_1fr] gap-2">
+					<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
 						<p class="col-span-1 text-sm text-neutral-400 uppercase">title</p>
 						<p class="col-span-1">{currentEdition.name}</p>
 					</div>
-					<div class="grid grid-cols-[0.3fr_1fr] items-center gap-2">
+					<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
 						<p class="col-span-1 text-sm text-neutral-400 uppercase">isbn</p>
 						<p class="col-span-1">{currentEdition.isbn}</p>
 					</div>
-					<div class="grid grid-cols-[0.3fr_1fr] items-center gap-2">
+					<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
 						<p class="col-span-1 text-sm text-neutral-400 uppercase">published</p>
 						<p class="col-span-1">{currentEdition.publishingDate}</p>
 					</div>
-					<div class="grid grid-cols-[0.3fr_1fr] items-center gap-2">
+					<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
 						<p class="col-span-1 text-sm text-neutral-400 uppercase">co-publisher</p>
 						<p class="col-span-1">{currentEdition.coPublisher}</p>
 					</div>
-					<div class="grid grid-cols-[0.3fr_1fr] items-center gap-2">
+					<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
 						<p class="col-span-1 text-sm text-neutral-400 uppercase">download</p>
 						{#if currentEdition.downloadHref}
 							<a href={toAssetHref(currentEdition.downloadHref)}>
@@ -56,23 +56,23 @@
 							<p class="col-span-1">-</p>
 						{/if}
 					</div>
-					<div class="grid grid-cols-[0.3fr_1fr] items-center gap-2">
+					<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
 						<p class="col-span-1 text-sm text-neutral-400 uppercase">editors</p>
 						<p class="col-span-1">{currentEdition.editors}</p>
 					</div>
-					<div class="grid grid-cols-[0.3fr_1fr] items-center gap-2">
+					<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
 						<p class="col-span-1 text-sm text-neutral-400 uppercase">design by</p>
 						<p class="col-span-1">{currentEdition.designers}</p>
 					</div>
-					<div class="grid grid-cols-[0.3fr_1fr] items-center gap-2">
+					<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
 						<p class="col-span-1 text-sm text-neutral-400 uppercase">contributors</p>
 						<p class="col-span-1">{currentEdition.contributors}</p>
 					</div>
-					<div class="grid grid-cols-[0.3fr_1fr] items-center gap-2">
+					<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
 						<p class="col-span-1 text-sm text-neutral-400 uppercase">topic</p>
 						<p class="col-span-1">{currentEdition.keywords}</p>
 					</div>
-					<div class="grid grid-cols-[0.3fr_1fr] items-center gap-2">
+					<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
 						<p class="col-span-1 text-sm text-neutral-400 uppercase">part of</p>
 						{#if currentEdition.parentUrl}
 							<a
@@ -90,7 +90,7 @@
 			</div>
 		{/if}
 	</div>
-	<div class="h-full w-full md:w-1/2" id="timone">
+	<div class="h-fit w-full md:h-full md:w-1/2" id="timone">
 		<div
 			class="grid h-full gap-2 overflow-y-scroll p-0 pb-8 md:h-full md:p-4 md:pb-0"
 			style={`grid-template-columns: repeat(${gridCols}, minmax(0, 1fr));`}
