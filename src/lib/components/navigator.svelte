@@ -2,6 +2,7 @@
 	import type { MenuVariations } from '$lib/types';
 	import { currentEdition, currentPanel, toAssetHref, isMobile } from '$lib/stores';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import bookIcon from '$lib/assets/icons/book.svg';
 	import galleryIcon from '$lib/assets/icons/gallery.svg';
@@ -14,10 +15,11 @@
 		{ panel: 'reader', icon: readerIcon, label: 'Reader' },
 		{ panel: 'home', icon: homeIcon, label: 'Home' }
 	];
+	const homeHref = resolve('/');
 
 	const setPanel = (panel: MenuVariations) => {
 		if (panel === 'home') {
-			goto('/');
+			goto(homeHref);
 		} else {
 			$currentPanel = panel;
 		}
