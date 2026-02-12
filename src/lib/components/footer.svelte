@@ -2,8 +2,7 @@
 	import { droppable, type DragDropState } from '@thisux/sveltednd';
 	import type { Edition } from '$lib/types';
 	import { isFooterOpen, isFooterHovered, hideFooter } from '$lib/stores';
-	import { openPanel } from '$lib/stores';
-	import { DND_FOOTER_CONTAINER } from '$lib/constants/dnd';
+	import { DND_FOOTER_CONTAINER, openPanel } from '$lib/stores';
 	import { slide } from 'svelte/transition';
 	import { cubicInOut } from 'svelte/easing';
 	import { page } from '$app/state';

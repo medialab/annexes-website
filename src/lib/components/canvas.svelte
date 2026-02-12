@@ -9,9 +9,9 @@
 		isTitleShowing,
 		currentEdition,
 		isCoverDragging,
-		currentPanel
+		currentPanel,
+		DND_SOURCE_CONTAINER
 	} from '$lib/stores';
-	import { DND_SOURCE_CONTAINER } from '$lib/constants/dnd';
 	import type { Edition } from '$lib/types';
 	import { cubicInOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';

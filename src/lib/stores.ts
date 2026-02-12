@@ -13,6 +13,8 @@ export const hideFooter = writable(true);
 export const isFooterHovered = writable(false);
 export const isTitleShowing = writable(false);
 export const isCoverDragging = writable(false);
+export const DND_SOURCE_CONTAINER = 'canvas';
+export const DND_FOOTER_CONTAINER = 'footer-dropzone';
 export const isAboutOpen = writable(false);
 
 const coverModules = import.meta.glob<string>('$lib/media/editions/**/thumb.{jpg,jpeg,png}', {

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { isExternalHref } from '$lib/utils';
+
 	interface Props {
 		href?: string;
 		url?: string;
@@ -11,12 +13,7 @@
 
 	let props: Props = $props();
 	const linkHref = $derived(props.href ?? props.url ?? '');
-
-	function isExternalLink(url: string) {
-		return /^(?:[a-z]+:)?\/\//i.test(url) || url.startsWith('mailto:') || url.startsWith('tel:');
-	}
-
-	const isExternal = $derived(isExternalLink(linkHref));
+	const isExternal = $derived(isExternalHref(linkHref));
 </script>
 
 {#if props.href || props.url}

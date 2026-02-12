@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { getEditionPages } from '$lib/stores';
 	import { isMobile } from '$lib/stores';
+	import { preventDefault } from '$lib/utils';
 
 	import arrowLeft from '$lib/assets/icons/arrowLeft.svg';
 	import arrowRight from '$lib/assets/icons/arrowRight.svg';
@@ -16,10 +17,6 @@
 
 	function prevPage() {
 		if (currentPage - 1 >= 0) currentPage -= 1;
-	}
-
-	function preventAssetCopy(event: Event) {
-		event.preventDefault();
 	}
 
 	$effect(() => {
@@ -65,11 +62,11 @@
 								decoding="async"
 								class="protected-image h-fit w-full overflow-clip rounded-2xl border-2 border-solid border-neutral-100 object-contain md:h-full md:border-0"
 								draggable="false"
-								oncontextmenu={preventAssetCopy}
-								ondragstart={preventAssetCopy}
-								oncopy={preventAssetCopy}
-								oncut={preventAssetCopy}
-								onselectstart={preventAssetCopy}
+								oncontextmenu={preventDefault}
+								ondragstart={preventDefault}
+								oncopy={preventDefault}
+								oncut={preventDefault}
+								onselectstart={preventDefault}
 							/>
 						</div>
 					{/each}

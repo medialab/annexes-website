@@ -1,14 +1,12 @@
 <script lang="ts">
 	let { currentEdition } = $props();
+	import { preventDefault } from '$lib/utils';
 
 	import arrowLeft from '$lib/assets/icons/arrowLeft.svg';
 	import arrowRight from '$lib/assets/icons/arrowRight.svg';
 
 	import testImg from '$lib/assets/test.png';
 
-	function preventAssetCopy(event: Event) {
-		event.preventDefault();
-	}
 </script>
 
 <main class="viewer_main h-full">
@@ -29,11 +27,11 @@
 			alt="Test"
 			class="protected-image h-full w-full max-w-full overflow-hidden rounded-2xl object-cover"
 			draggable="false"
-			oncontextmenu={preventAssetCopy}
-			ondragstart={preventAssetCopy}
-			oncopy={preventAssetCopy}
-			oncut={preventAssetCopy}
-			onselectstart={preventAssetCopy}
+			oncontextmenu={preventDefault}
+			ondragstart={preventDefault}
+			oncopy={preventDefault}
+			oncut={preventDefault}
+			onselectstart={preventDefault}
 		/>
 	</div>
 	<button
