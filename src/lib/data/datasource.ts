@@ -39,8 +39,8 @@ export let editions: Edition[] = [
 	,
 	{
 		id: "2026",
-		name: "fanzine_master_num",
-		subtitle: "fanzine_master_num",
+		name: "Styles of Moderation",
+		subtitle: "Styles of Moderation: The Art of Self-Management in the Age of AI",
 		isbn: "-",
 		description: "...",
 		publishingDate: "Tue Nov 19 14:24:47 2024 UTC",
@@ -54,20 +54,22 @@ export let editions: Edition[] = [
 		parentProject: "",
 		parentUrl: ""
 	},
-    {
-        id: "2026",
-        name: "tdi_20260114_pages_small",
-        subtitle: "tdi_20260114_pages_small",
-        isbn: "-",
-        description: "...",
-        publishingDate: "Thu Jan 15 05:54:36 2026 UTC",
-        coPublisher: "Adobe InDesign 21.1 (Macintosh)",
-        coPublisherUrl: "",
-        downloadHref: "pdfs/TdI_20260114_pages_small.pdf",
-        editors: [],
-        designers: [],
-        contributors: [],
-        keywords: [],
-        parentProject: "",
-        parentUrl: ""
-    }];
+	{
+		id: '2025',
+		name: 'Trajectories of Engagement',
+		subtitle: 'Trajectories of Engagement: Challenging the Materiality of Participatory Research',
+		isbn: '978-2-9597067-2-1',
+		description:
+			'Trajectories of engagement are ways people involve themselves in the world and in specific situations. This publication frames participation as a dynamic and situated process, and explores how forms of attachment to people, things and ideas evolve over time across social and professional contexts.',
+		publishingDate: 'December 2025',
+		coPublisher: 'editions annexes / medialab Sciences Po',
+		coPublisherUrl: 'https://www.sciencespo.fr/medialab/',
+		downloadHref: 'pdfs/TdI_20260114_pages_small.pdf',
+		editors: ['Robin de Mourat', 'Elie Petit', 'Donato Ricci', 'Marta Severo'],
+		designers: ['Donato Ricci'],
+		contributors: ['Robin de Mourat', 'Donato Ricci', 'Marta Severo'],
+		keywords: ['Participatory research', 'Engagement', 'Citizen science', 'Co-design'],
+		parentProject: 'Trajectories of Engagement',
+		parentUrl: 'https://trajectories.sciencespo.fr'
+	}
+];
