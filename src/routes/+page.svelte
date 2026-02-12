@@ -7,7 +7,7 @@
 	const pageTitle = 'editions annexes';
 	const pageDescription =
 		'Projet editorial du medialab Sciences Po publie en editions annexes: formats de recherche, protocoles, zines et materiaux.';
-	const socialImageUrl = $derived(new URL(asset('/og_image.png'), page.url.origin).href);
+	const socialImageUrl = $derived(new URL(asset('/og_image.png'), page.url.href).href);
 </script>
 
 <svelte:head>

@@ -7,7 +7,7 @@
 	const pageTitle = 'About | editions annexes';
 	const pageDescription =
 		'Presentation du projet editions annexes: publier la recherche hors des formats editoriaux scientifiques classiques.';
-	const socialImageUrl = $derived(new URL(asset('/og_image.png'), page.url.origin).href);
+	const socialImageUrl = $derived(new URL(asset('/og_image.png'), page.url.href).href);
 </script>
 
 <svelte:head>

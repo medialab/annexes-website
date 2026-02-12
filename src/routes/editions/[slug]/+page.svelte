@@ -9,7 +9,7 @@
 		data.correctEdition.description || data.correctEdition.subtitle || 'Edition from editions annexes.'
 	);
 	const ogImage = $derived(getEditionCover(data.correctEdition.name));
-	const socialImageUrl = $derived(ogImage ? new URL(ogImage, page.url.origin).href : '');
+	const socialImageUrl = $derived(ogImage ? new URL(ogImage, page.url.href).href : '');
 </script>
 
 <svelte:head>
