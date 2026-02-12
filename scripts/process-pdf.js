@@ -1,6 +1,7 @@
 import { execFileSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import vm from 'vm';
 
 const PDF_SOURCE_DIR = 'static/pdfs';
 const IMAGE_OUTPUT_DIR = 'src/lib/media/editions';
@@ -29,8 +30,9 @@ function getPdfMetadata(pdfPath) {
             }
         });
         return metadata;
-    } catch (e) {
-        console.error(`Could not extract metadata for ${pdfPath}`, e);
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.warn(`Could not extract metadata for ${pdfPath}: ${message}`);
         return {};
     }
 }
@@ -73,7 +75,7 @@ function ensureThumbFromFirstPage(slug) {
     return true;
 }
 
-function processPdf(pdfPath, slug, relativePdfPath) {
+function generatePages(pdfPath, slug) {
     const targetDir = path.join(IMAGE_OUTPUT_DIR, slug);
 
     console.log(`Processing: ${pdfPath} -> ${targetDir}`);
@@ -93,15 +95,18 @@ function processPdf(pdfPath, slug, relativePdfPath) {
         console.error(`Error splitting PDF ${pdfPath}:`, e);
         throw e;
     }
+}
 
-    // Prepare metadata
+function createEditionFromPdf(pdfPath, slug, relativePdfPath) {
     const metadata = getPdfMetadata(pdfPath);
     const editionTitle = metadata['Title'] || slug.replace(/-/g, ' ');
-    const date = metadata['CreationDate'] || new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const date =
+        metadata['CreationDate'] ||
+        new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
-    const newEdition = {
+    return {
         id: new Date().getFullYear().toString(),
-        name: slug,
+        name: path.basename(relativePdfPath, '.pdf'),
         subtitle: editionTitle,
         isbn: '-',
         description: '...',
@@ -114,10 +119,29 @@ function processPdf(pdfPath, slug, relativePdfPath) {
         contributors: [],
         keywords: [],
         parentProject: '',
-        parentUrl: '',
+        parentUrl: ''
     };
+}
 
-    return newEdition;
+function processPdf(pdfPath, slug, relativePdfPath) {
+    generatePages(pdfPath, slug);
+    return createEditionFromPdf(pdfPath, slug, relativePdfPath);
+}
+
+function ensureAssetsForPdf(pdfPath, slug) {
+    if (hasGeneratedPages(slug)) {
+        console.log(`[OK] ${pdfPath} already has page JPGs.`);
+        if (!hasThumb(slug)) {
+            console.log(`[MISSING THUMB] ${pdfPath} has pages but no thumb. Creating thumb...`);
+            if (!ensureThumbFromFirstPage(slug)) {
+                throw new Error(`[MISSING THUMB] Could not create thumb for ${pdfPath}.`);
+            }
+        }
+        return;
+    }
+
+    console.log(`[MISSING JPGS] ${pdfPath} has no page JPGs. Re-generating...`);
+    generatePages(pdfPath, slug);
 }
 
 function hasGeneratedPages(slug) {
@@ -153,118 +177,216 @@ function getPdfFilesRecursive(rootDir, currentDir = rootDir) {
 }
 
 function readDatasource() {
-    let content = fs.readFileSync(DATASOURCE_PATH, 'utf8');
-    // We try to extract the array content. This is brittle but works for the current structure.
-    const startMatch = content.indexOf('editions: Edition[] = [');
-    if (startMatch === -1) return { content, editions: [] };
-
-    const openingBracket = content.indexOf('[', startMatch);
-    const closingBracket = content.lastIndexOf(']');
-
-    // This is a hacky way to parse a TS/JS array. 
-    // In a real environment, we might use a proper TS parser or transform to JSON.
-    // For now, we'll use regex to find individual objects if possible, or just analyze the string.
-    const editionsStr = content.slice(openingBracket, closingBracket + 1);
-
-    // We'll rely on our manual identification of 'name' properties for sync.
-    const nameRegex = /name:\s*['"]([^'"]+)['"]/g;
-    let names = [];
-    let m;
-    while ((m = nameRegex.exec(editionsStr)) !== null) {
-        names.push(slugify(m[1]));
+    const content = fs.readFileSync(DATASOURCE_PATH, 'utf8');
+    const startMatch = content.indexOf('editions: Edition[] =');
+    if (startMatch === -1) {
+        throw new Error(`Could not find editions array in ${DATASOURCE_PATH}`);
     }
 
-    return { content, names, lastBracketIndex: closingBracket };
+    const equalsIndex = content.indexOf('=', startMatch);
+    if (equalsIndex === -1) {
+        throw new Error(`Could not find editions assignment in ${DATASOURCE_PATH}`);
+    }
+
+    const openingBracket = content.indexOf('[', equalsIndex);
+    const closingBracket = content.lastIndexOf(']');
+    if (openingBracket === -1 || closingBracket === -1 || closingBracket < openingBracket) {
+        throw new Error(`Could not parse editions array boundaries in ${DATASOURCE_PATH}`);
+    }
+
+    const editionsStr = content.slice(openingBracket, closingBracket + 1);
+    const editions = vm.runInNewContext(`(${editionsStr})`);
+
+    if (!Array.isArray(editions)) {
+        throw new Error(`Parsed editions is not an array in ${DATASOURCE_PATH}`);
+    }
+
+    return {
+        editions,
+        prefix: content.slice(0, openingBracket),
+        suffix: content.slice(closingBracket + 1)
+    };
 }
 
-function updateDatasource(newEditions) {
-    if (newEditions.length === 0) return;
+function toTsLiteral(value, depth = 0) {
+    const indent = '    '.repeat(depth);
+    const childIndent = '    '.repeat(depth + 1);
 
-    let { content, lastBracketIndex } = readDatasource();
+    if (Array.isArray(value)) {
+        if (value.length === 0) return '[]';
+        const items = value.map((item) => `${childIndent}${toTsLiteral(item, depth + 1)}`).join(',\n');
+        return `[\n${items}\n${indent}]`;
+    }
 
-    let entriesString = '';
-    newEditions.forEach(edition => {
-        entriesString += `,\n    ${JSON.stringify(edition, null, 8).slice(0, -1).replace(/"([^"]+)":/g, '$1:')}    }`;
-    });
+    if (value && typeof value === 'object') {
+        const entries = Object.entries(value);
+        if (entries.length === 0) return '{}';
+        const props = entries
+            .map(([key, val]) => `${childIndent}${key}: ${toTsLiteral(val, depth + 1)}`)
+            .join(',\n');
+        return `{\n${props}\n${indent}}`;
+    }
 
-    const updatedContent = content.slice(0, lastBracketIndex) + entriesString + content.slice(lastBracketIndex);
+    if (typeof value === 'string') {
+        return `'${value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+    }
+
+    return String(value);
+}
+
+function writeDatasource(editions, prefix, suffix) {
+    const updatedContent = `${prefix}${toTsLiteral(editions)}${suffix}`;
     fs.writeFileSync(DATASOURCE_PATH, updatedContent);
 }
 
+function buildPdfRecords() {
+    const pdfFiles = getPdfFilesRecursive(PDF_SOURCE_DIR);
+
+    return pdfFiles.map((relativePath) => {
+        const rawName = path.basename(relativePath, '.pdf');
+        const slug = slugify(rawName);
+        const pdfPath = path.join(PDF_SOURCE_DIR, relativePath);
+        const normalizedPath = relativePath.split(path.sep).join('/');
+        const metadata = getPdfMetadata(pdfPath);
+
+        return {
+            relativePath,
+            normalizedPath,
+            rawName,
+            slug,
+            pdfPath,
+            downloadHref: `pdfs/${normalizedPath}`,
+            titleSlug: slugify(metadata['Title'] || '')
+        };
+    });
+}
+
 function sync() {
-    const { names: existingNames } = readDatasource();
+    const { editions: existingEditions, prefix, suffix } = readDatasource();
+    const editions = [...existingEditions];
 
     // Ensure directories exist
     if (!fs.existsSync(PDF_SOURCE_DIR)) fs.mkdirSync(PDF_SOURCE_DIR, { recursive: true });
     if (!fs.existsSync(IMAGE_OUTPUT_DIR)) fs.mkdirSync(IMAGE_OUTPUT_DIR, { recursive: true });
 
     const allAssetFiles = fs.readdirSync(IMAGE_OUTPUT_DIR);
+    const assetFolders = allAssetFiles.filter((f) =>
+        fs.statSync(path.join(IMAGE_OUTPUT_DIR, f)).isDirectory()
+    );
 
-    const pdfFiles = getPdfFilesRecursive(PDF_SOURCE_DIR);
-    const assetFolders = allAssetFiles.filter(f => fs.statSync(path.join(IMAGE_OUTPUT_DIR, f)).isDirectory());
+    const pdfRecords = buildPdfRecords();
+    const unmatchedPdfIndexes = new Set(pdfRecords.map((_, i) => i));
+    const matchedEntryIndexes = new Set();
+    const matches = [];
 
     console.log('--- SYNC START ---');
-    console.log('Existing in JSON:', existingNames);
+    console.log(
+        'Existing in JSON:',
+        editions.map((edition) => slugify(edition?.name || ''))
+    );
 
-    let newEditionsData = [];
     let hasProcessingErrors = false;
 
-    // 1. Check for new PDFs
-    pdfFiles.forEach(file => {
-        const rawName = path.basename(file, '.pdf');
-        const slug = slugify(rawName);
-        const pdfPath = path.join(PDF_SOURCE_DIR, file);
+    // 1. Direct matches by slug(name)
+    editions.forEach((edition, entryIndex) => {
+        const editionSlug = slugify(edition?.name || '');
+        const pdfIndex = pdfRecords.findIndex(
+            (pdf, index) => unmatchedPdfIndexes.has(index) && pdf.slug === editionSlug
+        );
 
-        if (!existingNames.includes(slug)) {
-            console.log(`[NEW PDF] Found ${file}, adding to datasource...`);
-            try {
-                const data = processPdf(pdfPath, slug, file);
-                newEditionsData.push(data);
-            } catch (_) {
-                hasProcessingErrors = true;
-            }
-        } else {
-            if (hasGeneratedPages(slug)) {
-                console.log(`[OK] ${file} already in datasource and page JPGs exist.`);
-                if (!hasThumb(slug)) {
-                    console.log(`[MISSING THUMB] ${file} has pages but no thumb. Creating thumb...`);
-                    if (!ensureThumbFromFirstPage(slug)) {
-                        console.error(`[MISSING THUMB] Could not create thumb for ${file}.`);
-                        hasProcessingErrors = true;
-                    }
-                }
-            } else {
-                console.log(`[MISSING JPGS] ${file} is in datasource but page JPGs are missing. Re-generating...`);
-                try {
-                    processPdf(pdfPath, slug, file);
-                } catch (_) {
-                    hasProcessingErrors = true;
-                }
-            }
+        if (pdfIndex !== -1) {
+            matches.push({ entryIndex, pdfIndex, reason: 'slug' });
+            matchedEntryIndexes.add(entryIndex);
+            unmatchedPdfIndexes.delete(pdfIndex);
         }
     });
 
-    // 2. Check for orphaned JSON entries
-    existingNames.forEach(name => {
-        const pdfExists = pdfFiles.some(f => slugify(path.basename(f, '.pdf')) === name);
-        if (!pdfExists) {
-            console.warn(`[WARNING] Orphaned JSON entry: '${name}'. No matching PDF found.`);
+    // 2. Rename matches by subtitle/title metadata
+    editions.forEach((edition, entryIndex) => {
+        if (matchedEntryIndexes.has(entryIndex)) return;
+        const subtitleSlug = slugify(edition?.subtitle || '');
+        if (!subtitleSlug) return;
+
+        const candidates = Array.from(unmatchedPdfIndexes).filter(
+            (pdfIndex) => pdfRecords[pdfIndex].titleSlug === subtitleSlug
+        );
+
+        if (candidates.length === 1) {
+            const pdfIndex = candidates[0];
+            matches.push({ entryIndex, pdfIndex, reason: 'title' });
+            matchedEntryIndexes.add(entryIndex);
+            unmatchedPdfIndexes.delete(pdfIndex);
         }
     });
 
-    // 3. Check for orphaned asset folders
-    assetFolders.forEach(folder => {
-        const pdfExists = pdfFiles.some(f => slugify(path.basename(f, '.pdf')) === folder);
-        if (!pdfExists) {
-            console.warn(`[CLEANUP] Orphaned Asset Folder: '${folder}'. No matching PDF found. Deleting...`);
+    // 3. Conservative fallback for one-to-one rename
+    const unmatchedEntryIndexes = editions
+        .map((_, index) => index)
+        .filter((index) => !matchedEntryIndexes.has(index));
+
+    if (unmatchedEntryIndexes.length === 1 && unmatchedPdfIndexes.size === 1) {
+        const entryIndex = unmatchedEntryIndexes[0];
+        const pdfIndex = Array.from(unmatchedPdfIndexes)[0];
+        matches.push({ entryIndex, pdfIndex, reason: 'fallback' });
+        matchedEntryIndexes.add(entryIndex);
+        unmatchedPdfIndexes.delete(pdfIndex);
+    }
+
+    // 4. Update matched entries and ensure assets
+    matches.forEach(({ entryIndex, pdfIndex, reason }) => {
+        const entry = editions[entryIndex];
+        const pdf = pdfRecords[pdfIndex];
+        const previousSlug = slugify(entry?.name || '');
+
+        if (previousSlug !== pdf.slug) {
+            console.log(`[RENAME:${reason}] '${entry.name}' -> '${pdf.rawName}'`);
+        }
+
+        entry.name = pdf.rawName;
+        entry.downloadHref = pdf.downloadHref;
+
+        try {
+            ensureAssetsForPdf(pdf.pdfPath, pdf.slug);
+        } catch (_) {
+            hasProcessingErrors = true;
+        }
+    });
+
+    // 5. Remove JSON entries that no longer have a corresponding PDF
+    const filteredEditions = editions.filter((_, index) => matchedEntryIndexes.has(index));
+    const removedCount = editions.length - filteredEditions.length;
+    if (removedCount > 0) {
+        console.warn(`[CLEANUP] Removed ${removedCount} orphaned JSON entr${removedCount === 1 ? 'y' : 'ies'}.`);
+    }
+
+    // 6. Add brand-new PDFs
+    const newEditionsData = [];
+    Array.from(unmatchedPdfIndexes).forEach((pdfIndex) => {
+        const pdf = pdfRecords[pdfIndex];
+        console.log(`[NEW PDF] Found ${pdf.relativePath}, adding to datasource...`);
+        try {
+            const data = processPdf(pdf.pdfPath, pdf.slug, pdf.relativePath);
+            newEditionsData.push(data);
+        } catch (_) {
+            hasProcessingErrors = true;
+        }
+    });
+
+    const finalEditions = [...filteredEditions, ...newEditionsData];
+
+    // 7. Check for orphaned asset folders
+    const activeSlugs = new Set(pdfRecords.map((record) => record.slug));
+    assetFolders.forEach((folder) => {
+        if (!activeSlugs.has(folder)) {
+            console.warn(
+                `[CLEANUP] Orphaned Asset Folder: '${folder}'. No matching PDF found. Deleting...`
+            );
             fs.rmSync(path.join(IMAGE_OUTPUT_DIR, folder), { recursive: true, force: true });
         }
     });
 
-    if (newEditionsData.length > 0) {
-        updateDatasource(newEditionsData);
-        console.log(`Added ${newEditionsData.length} new entries to ${DATASOURCE_PATH}`);
-    }
+    writeDatasource(finalEditions, prefix, suffix);
+    console.log(`Synced ${DATASOURCE_PATH}: ${finalEditions.length} entries.`);
 
     if (hasProcessingErrors) {
         throw new Error('One or more PDFs failed to process.');
