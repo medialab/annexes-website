@@ -7,6 +7,7 @@
         "@thisux/sveltednd": "^0.0.20",
         "canvas": "^3.2.1",
         "pdf-viewer": "^0.8.1",
+        "pdfinfo": "^0.0.3",
         "pdfjs-dist": "^5.4.624",
         "svelte-device-info": "^1.0.6",
         "svelte-pdf": "^2.0.2",
@@ -440,6 +441,8 @@
     "pathe": ["pathe@2.0.3", "", {}, "sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w=="],
 
     "pdf-viewer": ["pdf-viewer@0.8.1", "", {}, "sha512-EO3cHnloOYEzT/v9Inz8oaX+1RoL/lJmRlACQNoB9MK11zDaYHyz9QX+5/sXtn04kl0IcCedSXnyx1m3PSM/Rw=="],
+
+    "pdfinfo": ["pdfinfo@0.0.3", "", {}, "sha512-IXtw6hI6R7HRXgiUmOGYjJgpPfK/ELBioyNadhhrbI7Lt/KWdrKChNFQ03FTGD37Kpkvt1BaWkdfu2bY+zlVIA=="],
 
     "pdfjs-dist": ["pdfjs-dist@5.4.624", "", { "optionalDependencies": { "@napi-rs/canvas": "^0.1.88", "node-readable-to-web-readable-stream": "^0.4.2" } }, "sha512-sm6TxKTtWv1Oh6n3C6J6a8odejb5uO4A4zo/2dgkHuC0iu8ZMAXOezEODkVaoVp8nX1Xzr+0WxFJJmUr45hQzg=="],
 
