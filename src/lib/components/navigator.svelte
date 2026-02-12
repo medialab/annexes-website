@@ -33,10 +33,12 @@
 			type="button"
 			class="nav-button h-full w-fit items-center justify-center gap-2 rounded-xl {$currentPanel ===
 			item.panel
-				? 'px-4 py-3'
+				? 'px-4 py-3 md:p-3'
 				: 'p-3'}"
 			onclick={() => setPanel(item.panel)}
 			class:active={$currentPanel === item.panel}
+			class:home-button={item.panel === 'home'}
+			class:back={$currentPanel === 'home'}
 			aria-label={item.label}
 			title={item.label}
 		>
@@ -68,6 +70,10 @@
 
 	.nav-button:is(:hover, .active) {
 		background-color: #e9f6ff;
+	}
+
+	.nav-button.home-button:hover {
+		background-color: #ffe5e5;
 	}
 
 	img:not(.active) {

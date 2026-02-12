@@ -1,31 +1,27 @@
 <script>
 	import Button from './button.svelte';
-	import homeIcon from '$lib/assets/icons/house.svg';
-	import burgerIcon from '$lib/assets/icons/burger.svg';
+	import infoIcon from '$lib/assets/icons/info.svg';
 	import annexesIcon from '$lib/assets/icons/annexes.png';
-	import { isTitleShowing, currentEdition } from '$lib/stores';
-	import { fly, slide } from 'svelte/transition';
-	import { cubicInOut } from 'svelte/easing';
 	import { resolve } from '$app/paths';
-
-	const homeHref = resolve('/');
+	import { goto } from '$app/navigation';
 </script>
 
 <header
-	class="fixed top-6 right-4 left-4 z-2 flex h-[50px] items-center justify-between rounded-2xl bg-white p-2 md:right-auto md:left-1/2 md:w-full md:max-w-[60%] md:-translate-x-1/2"
+	class="fixed top-6 right-4 left-4 z-30 flex h-[50px] items-center justify-between rounded-2xl bg-white p-2 md:right-auto md:left-1/2 md:w-full md:max-w-[60%] md:-translate-x-1/2"
 >
-	<div class="hidden md:block">
-		<Button label="Home" icon={homeIcon} href={homeHref}></Button>
-	</div>
-
-	<div class="flex h-full flex-col overflow-clip">
+	<a
+		href="/"
+		onclick={() => goto(resolve('/'))}
+		class="flex h-full flex-col items-center justify-center overflow-clip"
+	>
 		<img src={annexesIcon} alt="annexes logo" class="h-[30px] w-auto" />
-	</div>
+	</a>
 
 	<div class="hidden md:block">
-		<Button label="Menu" icon={burgerIcon} href={homeHref}></Button>
+		<Button label="About" icon={infoIcon} href="/about" onClick={() => goto(resolve('/about'))}
+		></Button>
 	</div>
 	<div class="md:hidden">
-		<Button icon={burgerIcon} href={homeHref}></Button>
+		<Button icon={infoIcon} href="/about" onClick={() => goto(resolve('/about'))}></Button>
 	</div>
 </header>

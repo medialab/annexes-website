@@ -6,13 +6,14 @@ import { asset, resolve } from '$app/paths';
 
 export const currentEdition = writable<Edition | null>(editions[0]);
 export const isMobile = writable(false);
-export const currentPanel = writable<MenuVariations | null>(undefined);
+export const currentPanel = writable<MenuVariations | null>('book');
 export const allEditions = writable<Edition[]>(editions);
 export let isFooterOpen = writable(false);
 export const hideFooter = writable(true);
 export const isFooterHovered = writable(false);
 export const isTitleShowing = writable(false);
 export const isCoverDragging = writable(false);
+export const isAboutOpen = writable(false);
 
 const coverModules = import.meta.glob<string>('$lib/media/editions/**/thumb.{jpg,jpeg,png}', {
     eager: true,

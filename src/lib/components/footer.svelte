@@ -3,9 +3,10 @@
 	import type { Edition } from '$lib/types';
 	import { isFooterOpen, isFooterHovered, hideFooter } from '$lib/stores';
 	import { openPanel } from '$lib/stores';
-	import { DND_FOOTER_CONTAINER, DND_SOURCE_CONTAINER } from '$lib/constants/dnd';
+	import { DND_FOOTER_CONTAINER } from '$lib/constants/dnd';
 	import { slide } from 'svelte/transition';
 	import { cubicInOut } from 'svelte/easing';
+	import { page } from '$app/state';
 
 	const dropContainer = DND_FOOTER_CONTAINER;
 
@@ -16,9 +17,7 @@
 	}
 
 	function handleDrop(state: DragDropState<Edition>) {
-		const { draggedItem, sourceContainer, targetContainer } = state;
-		if (sourceContainer !== DND_SOURCE_CONTAINER) return;
-		if (targetContainer !== DND_FOOTER_CONTAINER) return;
+		const { draggedItem } = state;
 		if (!isEdition(draggedItem)) return;
 
 		openPanel(draggedItem);
@@ -38,7 +37,7 @@
 	<!-- Test -->
 {:else}
 	<footer
-		class="fixed right-4 bottom-6 left-4 z-2 hidden h-fit items-center justify-center gap-3 rounded-2xl bg-white/95 p-2 backdrop-blur transition-all duration-300 ease-in-out md:right-auto md:left-1/2 md:flex md:w-full md:max-w-[60%] md:-translate-x-1/2"
+		class="fixed right-4 bottom-6 left-4 z-30 hidden h-fit items-center justify-center gap-3 rounded-2xl bg-white/95 p-2 backdrop-blur transition-all duration-300 ease-in-out md:right-auto md:left-1/2 md:flex md:w-full md:max-w-[60%] md:-translate-x-1/2"
 		class:open={$isFooterOpen === true}
 		use:droppable={{
 			container: dropContainer,
