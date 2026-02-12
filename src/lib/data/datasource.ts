@@ -53,4 +53,21 @@ export let editions: Edition[] = [
 		keywords: [],
 		parentProject: "",
 		parentUrl: ""
-	}];
+	},
+    {
+        id: "2026",
+        name: "tdi_20260114_pages_small",
+        subtitle: "tdi_20260114_pages_small",
+        isbn: "-",
+        description: "...",
+        publishingDate: "Thu Jan 15 05:54:36 2026 UTC",
+        coPublisher: "Adobe InDesign 21.1 (Macintosh)",
+        coPublisherUrl: "",
+        downloadHref: "pdfs/TdI_20260114_pages_small.pdf",
+        editors: [],
+        designers: [],
+        contributors: [],
+        keywords: [],
+        parentProject: "",
+        parentUrl: ""
+    }];
