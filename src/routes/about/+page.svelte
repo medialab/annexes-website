@@ -7,7 +7,7 @@
 	const pageTitle = 'About | editions annexes';
 	const pageDescription =
 		'Presentation du projet editions annexes: publier la recherche hors des formats editoriaux scientifiques classiques.';
-	const socialImageUrl = $derived(new URL(asset('/og_image.png'), page.url.href).href);
+	const socialImageUrl = 'https://medialab.github.io/annexes-website/og_image.png';
 </script>
 
 <svelte:head>
