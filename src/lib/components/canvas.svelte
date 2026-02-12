@@ -402,6 +402,12 @@
 		return `left: ${placement.x + camera.x}px; top: ${placement.y + camera.y}px; width: ${placement.width}px; z-index: ${zIndex}; transform: rotate(${placement.rotate}deg);`;
 	}
 
+	function getMobileStyle(index: number) {
+		const rotation = randomBetween(-6, 6);
+
+		return `transform: rotate(${rotation}deg);`;
+	}
+
 	function setDragImage(event: DragEvent) {
 		if (!event.dataTransfer) return;
 		const target = event.currentTarget as HTMLElement | null;
@@ -447,7 +453,7 @@
 
 <section
 	bind:this={host}
-	class="group/canvas relative top-12 z-0 flex w-full flex-col items-center justify-center gap-12 overflow-y-scroll py-24 md:top-0 md:h-dvh md:w-screen md:overflow-hidden md:py-0"
+	class="group/canvas relative top-12 z-0 flex w-full flex-col items-center justify-center gap-20 overflow-y-scroll py-24 md:top-0 md:h-dvh md:w-screen md:gap-0 md:overflow-hidden md:py-0"
 >
 	{#each dummyEditions as edition, index}
 		{@const coverImg = getEditionCover(edition.name)}
@@ -476,12 +482,13 @@
 		</button>
 		<!-- mobile version -->
 		<button
-			class="mx-12 block h-[250px] rounded-md bg-white/90 shadow-[0_12px_30px_rgba(15,23,42,0.16)] md:hidden"
+			class="block h-auto w-[80%] rounded-md bg-white/90 shadow-[0_12px_30px_rgba(15,23,42,0.16)] md:hidden"
 			type="button"
 			aria-label={edition.name}
 			onclick={() => openPanel(edition)}
+			style={getMobileStyle(index)}
 		>
-			<img src={coverImg} alt={edition.name} class="h-full w-auto object-contain" />
+			<img src={coverImg} alt={edition.name} class="h-auto w-full object-contain" />
 		</button>
 	{/each}
 

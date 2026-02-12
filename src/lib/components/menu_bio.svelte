@@ -1,13 +1,8 @@
 <script lang="ts">
 	let { currentEdition, gridCols } = $props();
-	import { getEditionPages } from '$lib/stores';
+	import { getEditionPages, toAssetHref } from '$lib/stores';
 	import { asset } from '$app/paths';
 	const pagesPromise = $derived(getEditionPages(currentEdition?.name ?? ''));
-
-	function toAssetHref(pathname?: string) {
-		if (!pathname) return '';
-		return asset(pathname.startsWith('/') ? pathname : `/${pathname}`);
-	}
 
 	function isExternalHref(url?: string) {
 		if (!url) return false;
@@ -20,7 +15,7 @@
 </script>
 
 <main
-	class="my-4 flex h-full min-h-0 w-full flex-1 flex-col gap-12 overflow-x-hidden overflow-y-auto p-0 md:flex-row md:gap-4 md:overflow-hidden md:rounded-3xl md:border-2 md:border-solid md:border-neutral-200 md:bg-neutral-100 md:p-4"
+	class="mt-4 flex h-full min-h-0 w-full flex-1 flex-col gap-12 overflow-x-hidden overflow-y-auto p-0 md:my-4 md:flex-row md:gap-4 md:overflow-hidden md:rounded-3xl md:border-2 md:border-solid md:border-neutral-200 md:bg-neutral-100 md:p-4"
 >
 	<div
 		class="h-fit w-full overflow-visible md:h-full md:w-1/2 md:overflow-hidden"

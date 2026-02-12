@@ -78,7 +78,7 @@
 {#key hoverLabel}
 	<div
 		aria-hidden="true"
-		class="pointer-events-none fixed top-0 left-0 z-120 rounded-full border border-neutral-300 bg-white/95 px-3 py-1 text-xs text-nowrap text-neutral-700 shadow-[0_8px_24px_rgba(15,23,42,0.14)] backdrop-blur transition-[opacity,transform] duration-150 ease-out will-change-transform"
+		class="pointer-events-none fixed top-0 left-0 z-120 hidden rounded-full border border-neutral-300 bg-white/95 px-3 py-1 text-xs text-nowrap text-neutral-700 shadow-[0_8px_24px_rgba(15,23,42,0.14)] backdrop-blur transition-[opacity,transform] duration-150 ease-out will-change-transform md:block"
 		class:opacity-100={isVisible}
 		class:opacity-0={!isVisible}
 		class:scale-100={isVisible}

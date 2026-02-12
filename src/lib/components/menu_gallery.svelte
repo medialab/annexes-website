@@ -11,7 +11,7 @@
 	}
 </script>
 
-<main class="viewer_main">
+<main class="viewer_main mt-4 h-full">
 	<button
 		id="arrow_left"
 		type="button"
@@ -22,7 +22,7 @@
 	</button>
 	<div
 		id="gallery"
-		class="col-span-2 row-start-1 flex h-full min-h-0 w-full items-center justify-center py-4 md:col-span-1 md:row-start-auto"
+		class="col-span-2 row-start-1 flex h-full min-h-0 w-full items-center justify-center md:col-span-1 md:row-start-auto md:py-4"
 	>
 		<img
 			src={testImg}
@@ -39,7 +39,7 @@
 	<button
 		id="arrow_right"
 		type="button"
-		class="col-start-2 row-start-2 flex h-full w-full items-center justify-center px-2 md:col-start-auto md:row-start-auto md:px-6"
+		class="col-start-2 row-start-2 flex h-full w-full items-center justify-center px-2 py-4 md:col-start-auto md:row-start-auto md:px-6 md:py-0"
 		data-hover="Next image"
 	>
 		<img src={arrowRight} alt="Arrow Right" class="" />

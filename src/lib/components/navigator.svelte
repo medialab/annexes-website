@@ -1,10 +1,11 @@
 <script lang="ts">
 	import type { MenuVariations } from '$lib/types';
-	import { currentPanel } from '$lib/stores';
+	import { currentEdition, currentPanel, toAssetHref } from '$lib/stores';
 
 	import bookIcon from '$lib/assets/icons/book.svg';
 	import galleryIcon from '$lib/assets/icons/gallery.svg';
 	import readerIcon from '$lib/assets/icons/reader.svg';
+	import downloadIcon from '$lib/assets/icons/download.svg';
 
 	const navItems: { panel: MenuVariations; icon: string; label: string }[] = [
 		{ panel: 'book', icon: bookIcon, label: 'Book' },
@@ -15,7 +16,7 @@
 
 <div
 	id="navigator"
-	class="left-4 flex flex-row items-center justify-between rounded-2xl border-neutral-200 bg-white p-2 md:relative md:inset-auto md:mx-0 md:h-fit md:w-fit md:flex-col md:items-center md:justify-center md:gap-2 md:border md:border-solid"
+	class="left-4 flex flex-row items-center justify-between rounded-2xl border-solid border-neutral-200 bg-white p-2 md:relative md:inset-auto md:mx-0 md:h-fit md:w-fit md:flex-col md:items-center md:justify-center md:gap-2 md:border"
 >
 	{#each navItems as item}
 		<button
@@ -29,6 +30,13 @@
 			<img src={item.icon} alt={item.label} />
 		</button>
 	{/each}
+	<a
+		href={toAssetHref($currentEdition?.downloadHref)}
+		class="nav-button block aspect-square w-[50px] justify-center rounded-xl p-2 md:hidden"
+		download={$currentEdition?.name}
+	>
+		<img src={downloadIcon} alt="Download" />
+	</a>
 </div>
 
 <style>

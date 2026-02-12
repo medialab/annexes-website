@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 import type { Edition, MenuVariations } from './types';
 import { editions } from './data/datasource';
 import { goto } from '$app/navigation';
-import { resolve } from '$app/paths';
+import { asset, resolve } from '$app/paths';
 
 export const currentEdition = writable<Edition | null>(editions[0]);
 export const isMobile = writable(false);
@@ -22,6 +22,11 @@ const coverModules = import.meta.glob<string>('$lib/media/editions/**/thumb.{jpg
 const pageModules = import.meta.glob<string>('$lib/media/editions/**/page-*.{jpg,jpeg,png}', {
     import: 'default'
 });
+
+export function toAssetHref(pathname?: string) {
+    if (!pathname) return undefined;
+    return asset(pathname.startsWith('/') ? pathname : `/${pathname}`);
+}
 
 function normalizeEditionKey(value?: string | null): string {
     if (!value) return '';

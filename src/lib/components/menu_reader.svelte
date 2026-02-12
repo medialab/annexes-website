@@ -28,7 +28,7 @@
 	});
 </script>
 
-<main class="viewer_main items-stretch">
+<main class="viewer_main my-auto h-fit">
 	{#await pagesPromise}
 		<div class="col-span-3 flex items-center justify-center">
 			<p class="text-sm text-neutral-500">Loading pages...</p>
@@ -38,7 +38,7 @@
 		{@const visiblePages = pages.slice(currentPage, currentPage + pagesPerView)}
 		<button
 			id="arrow_left"
-			class="col-start-1 row-start-2 flex h-full w-full items-center justify-center px-2 disabled:opacity-30 md:col-start-auto md:row-start-auto md:px-6"
+			class="col-start-1 row-start-2 flex h-full w-full items-center justify-center px-2 py-4 disabled:opacity-30 md:col-start-auto md:row-start-auto md:px-6 md:py-0"
 			onclick={prevPage}
 			disabled={currentPage <= 0}
 			data-hover="Previous page"
@@ -48,22 +48,22 @@
 
 		<div
 			id="gallery"
-			class="col-span-2 flex h-full min-h-0 w-full items-stretch justify-center md:col-span-1"
+			class="col-span-2 flex h-fit min-h-0 w-full items-stretch justify-center md:col-span-1 md:h-full"
 		>
 			{#if pages.length === 0}
 				<p class="text-sm text-neutral-500">No pages found.</p>
 			{:else}
-				<div class="grid h-full min-h-0 w-full grid-cols-1 items-stretch md:grid-cols-2">
+				<div class="grid h-fit min-h-0 w-full grid-cols-1 items-stretch md:h-full md:grid-cols-2">
 					{#each visiblePages as page}
 						<div
-							class="col-span-1 flex h-full min-h-0 w-full items-center justify-center overflow-hidden py-4"
+							class="col-span-1 flex h-fit min-h-0 w-full items-center justify-center overflow-hidden md:h-full md:bg-transparent md:py-4"
 						>
 							<img
 								src={page}
 								alt=""
 								loading="lazy"
 								decoding="async"
-								class="protected-image h-full w-full overflow-clip rounded-xl object-contain"
+								class="protected-image h-fit w-full overflow-clip rounded-2xl border-2 border-solid border-neutral-100 object-contain md:h-full md:border-0"
 								draggable="false"
 								oncontextmenu={preventAssetCopy}
 								ondragstart={preventAssetCopy}
