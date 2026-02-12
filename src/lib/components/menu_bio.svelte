@@ -1,8 +1,8 @@
 <script lang="ts">
 	let { currentEdition, gridCols } = $props();
-	import { getEditionPages, toAssetHref } from '$lib/stores';
-	import { asset } from '$app/paths';
+	import { getEditionDownloadInfo, getEditionPages, toAssetHref } from '$lib/stores';
 	const pagesPromise = $derived(getEditionPages(currentEdition?.name ?? ''));
+	const downloadInfo = $derived(getEditionDownloadInfo(currentEdition));
 
 	function isExternalHref(url?: string) {
 		if (!url) return false;
@@ -15,7 +15,7 @@
 </script>
 
 <main
-	class="mt-4 flex h-full min-h-0 w-full flex-1 flex-col gap-12 overflow-x-hidden overflow-y-auto p-0 md:my-4 md:flex-row md:gap-4 md:overflow-hidden md:rounded-3xl md:border-2 md:border-solid md:border-neutral-200 md:bg-neutral-100 md:p-4"
+	class="flex h-full min-h-0 w-full flex-1 flex-col gap-12 overflow-x-hidden overflow-y-auto rounded-xl p-0 md:flex-row md:gap-4 md:overflow-hidden md:rounded-3xl md:border-2 md:border-solid md:border-neutral-200 md:bg-neutral-100 md:p-4"
 >
 	<div
 		class="h-fit w-full overflow-visible md:h-full md:w-1/2 md:overflow-hidden"
@@ -47,9 +47,9 @@
 					</div>
 					<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
 						<p class="col-span-1 text-sm text-neutral-400 uppercase">download</p>
-						{#if currentEdition.downloadHref}
-							<a href={toAssetHref(currentEdition.downloadHref)}>
-								<p class="col-span-1">{currentEdition.downloadHref}</p>
+						{#if downloadInfo.href}
+							<a href={downloadInfo.href} download={downloadInfo.filename}>
+								<p class="col-span-1">{downloadInfo.filename ?? currentEdition.downloadHref}</p>
 							</a>
 						{:else}
 							<p class="col-span-1">-</p>

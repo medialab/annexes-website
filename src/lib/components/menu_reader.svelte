@@ -28,9 +28,9 @@
 	});
 </script>
 
-<main class="viewer_main my-auto h-fit">
+<main class="viewer_main my-auto h-fit md:h-full">
 	{#await pagesPromise}
-		<div class="col-span-3 flex items-center justify-center">
+		<div class="col-span-3 flex h-full items-center justify-center">
 			<p class="text-sm text-neutral-500">Loading pages...</p>
 		</div>
 	{:then pages}

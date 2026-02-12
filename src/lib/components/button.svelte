@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { currentEdition } from '$lib/stores';
-
 	interface Props {
 		href?: string;
 		url?: string;
@@ -32,7 +30,7 @@
 		class:resolved={props?.urgency === 'resolved'}
 		onclick={props.onClick}
 		data-sveltekit-preload-data="hover"
-		download={props.download ? `${props.download}.pdf` : undefined}
+		download={props.download || undefined}
 		class:disabled={!props.download && !props.label && !props.icon}
 	>
 		{#if props.label}

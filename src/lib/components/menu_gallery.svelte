@@ -11,7 +11,7 @@
 	}
 </script>
 
-<main class="viewer_main mt-4 h-full">
+<main class="viewer_main h-full">
 	<button
 		id="arrow_left"
 		type="button"

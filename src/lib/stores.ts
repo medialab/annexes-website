@@ -6,7 +6,7 @@ import { asset, resolve } from '$app/paths';
 
 export const currentEdition = writable<Edition | null>(editions[0]);
 export const isMobile = writable(false);
-export const currentPanel = writable<MenuVariations | null>('book');
+export const currentPanel = writable<MenuVariations | null>(undefined);
 export const allEditions = writable<Edition[]>(editions);
 export let isFooterOpen = writable(false);
 export const hideFooter = writable(true);
@@ -26,6 +26,28 @@ const pageModules = import.meta.glob<string>('$lib/media/editions/**/page-*.{jpg
 export function toAssetHref(pathname?: string) {
     if (!pathname) return undefined;
     return asset(pathname.startsWith('/') ? pathname : `/${pathname}`);
+}
+
+function ensurePdfFilename(value?: string | null): string | undefined {
+    const normalized = value?.trim();
+    if (!normalized) return undefined;
+    return normalized.toLowerCase().endsWith('.pdf') ? normalized : `${normalized}.pdf`;
+}
+
+function filenameFromPath(pathname?: string | null): string | undefined {
+    if (!pathname) return undefined;
+    const normalized = pathname.split('/').pop();
+    return ensurePdfFilename(normalized);
+}
+
+export function getEditionDownloadInfo(
+    edition?: Pick<Edition, 'downloadHref' | 'name'> | null
+): { href?: string; filename?: string } {
+    const href = toAssetHref(edition?.downloadHref);
+    if (!href) return {};
+
+    const filename = ensurePdfFilename(edition?.name) ?? filenameFromPath(edition?.downloadHref);
+    return { href, filename };
 }
 
 function normalizeEditionKey(value?: string | null): string {
@@ -98,6 +120,7 @@ export async function getEditionPages(editionName?: string | null): Promise<stri
 
 export function openPanel(edition: Edition) {
     console.log('edition dropped:', edition);
+    currentPanel.set('book');
     isFooterOpen.set(false);
     goto(resolve(`/editions/${edition.name}`));
     currentEdition.set(edition);

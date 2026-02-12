@@ -92,11 +92,11 @@
 
 @layer base {
 	h1 {
-		@apply text-2xl leading-none md:text-5xl font-normal;
+		@apply text-3xl leading-none md:text-4xl font-normal;
 	}
 
 	h2 {
-		@apply text-xl leading-none md:text-3xl font-normal;
+		@apply text-xl leading-none md:text-2xl font-normal;
 	}
 
 	h3 {
@@ -156,7 +156,7 @@
 	}
 
 	a:hover, button:hover {
-		@apply underline underline-offset-2;
+		@apply no-underline md:underline underline-offset-2;
 	}
 
 	*,
@@ -179,7 +179,7 @@
 	}
 
 	.viewer_main {
-		@apply relative  md:mt-4 grid overflow-hidden  md:h-full min-h-0 w-full grid-cols-2 grid-rows-[2fr_0.1fr] md:grid-cols-[0.1fr_1fr_0.1fr] md:grid-rows-1 items-center rounded-3xl border-0 md:border-2 border-solid border-neutral-200 bg-white md:bg-neutral-100;
+		@apply relative  grid overflow-hidden  md:h-full min-h-0 w-full grid-cols-2 grid-rows-[2fr_0.1fr] md:grid-cols-[0.1fr_1fr_0.1fr] md:grid-rows-1 items-center rounded-3xl border-0 md:border-2 border-solid border-neutral-200 bg-white md:bg-neutral-100;
 	}
 }
 

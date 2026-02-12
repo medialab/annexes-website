@@ -8,7 +8,8 @@
 		hideFooter,
 		isTitleShowing,
 		currentEdition,
-		isCoverDragging
+		isCoverDragging,
+		currentPanel
 	} from '$lib/stores';
 	import { DND_SOURCE_CONTAINER } from '$lib/constants/dnd';
 	import type { Edition } from '$lib/types';

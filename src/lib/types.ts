@@ -25,4 +25,4 @@ export type DropItem =
         title?: string;
     };
 
-export type MenuVariations = "book" | "layout" | "gallery" | "reader";
+export type MenuVariations = "book" | "home" | "gallery" | "reader";

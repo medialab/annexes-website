@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { currentPanel, isMobile, toAssetHref } from '$lib/stores';
+	import { currentPanel, getEditionDownloadInfo } from '$lib/stores';
 	import Button from './button.svelte';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
@@ -14,13 +14,14 @@
 	import MenuReader from './menu_reader.svelte';
 	import Navigator from './navigator.svelte';
 	import { goto } from '$app/navigation';
-	import { asset, resolve } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
 
 	let { currentEdition } = $props();
 
 	let gridColsNum = $state(2);
 	const homeHref = resolve('/');
+	const downloadInfo = $derived(getEditionDownloadInfo(currentEdition));
 </script>
 
 <svelte:window onkeydown={(e) => e.key === 'Escape' && goto(homeHref)} />
@@ -56,18 +57,18 @@
 					}}
 				></Button>
 			</header>
-			<div class="flex h-fit w-full items-start justify-between md:hidden">
+			<div class="mb-4 flex h-fit w-full items-start justify-between md:hidden">
 				<div class="flex w-[80%] flex-col gap-0 text-wrap">
 					<h1>{currentEdition.name}</h1>
 					<p>{currentEdition.subtitle}</p>
 				</div>
-				<Button
-					icon={closeIcon}
-					urgency="urgent"
-					onClick={() => {
-						goto(homeHref);
-					}}
-				></Button>
+				<a
+					href={downloadInfo.href}
+					download={downloadInfo.filename}
+					class="place-items-center p-2 opacity-50"
+				>
+					<img src={downloadIcon} alt="Download" />
+				</a>
 			</div>
 
 			{#if $currentPanel === 'book'}
@@ -81,8 +82,8 @@
 				<Button
 					label="Download"
 					icon={downloadIcon}
-					url={toAssetHref(currentEdition?.downloadHref)}
-					download={currentEdition?.name}
+					url={downloadInfo.href}
+					download={downloadInfo.filename}
 				></Button>
 				{#if $currentPanel === 'book'}
 					<div class="flex w-full items-center justify-center">
@@ -105,26 +106,11 @@
 				<Button label="Share" icon={shareIcon} href={homeHref}></Button>
 			</footer>
 		</div>
-		<!--<div class="flex flex-row justify-between md:hidden">
-			<Button
-				label={`Visit the original project page`}
-				icon={externalLinkIcon}
-				url={currentEdition?.parentUrl}
-			></Button>
-
-			<Button
-				icon={closeIcon}
-				urgency="urgent"
-				onClick={() => {
-					goto(homeHref);
-				}}
-			></Button>
-		</div>-->
 	</div>
 
 	<button
 		id="bg_drop"
-		class="fixed z-0 h-dvh w-dvw cursor-alias bg-[#F5F5F5] opacity-95 md:opacity-80"
+		class="fixed z-0 h-dvh w-dvw cursor-alias bg-[#F5F5F5] opacity-100 md:opacity-80"
 		onclick={() => goto(homeHref)}
 		aria-label="Close menu"
 		tabindex="0"

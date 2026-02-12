@@ -1,17 +1,27 @@
 <script lang="ts">
 	import type { MenuVariations } from '$lib/types';
-	import { currentEdition, currentPanel, toAssetHref } from '$lib/stores';
+	import { currentEdition, currentPanel, toAssetHref, isMobile } from '$lib/stores';
+	import { goto } from '$app/navigation';
 
 	import bookIcon from '$lib/assets/icons/book.svg';
 	import galleryIcon from '$lib/assets/icons/gallery.svg';
 	import readerIcon from '$lib/assets/icons/reader.svg';
-	import downloadIcon from '$lib/assets/icons/download.svg';
+	import homeIcon from '$lib/assets/icons/homeIcon.svg';
 
 	const navItems: { panel: MenuVariations; icon: string; label: string }[] = [
 		{ panel: 'book', icon: bookIcon, label: 'Book' },
 		{ panel: 'gallery', icon: galleryIcon, label: 'Gallery' },
-		{ panel: 'reader', icon: readerIcon, label: 'Reader' }
+		{ panel: 'reader', icon: readerIcon, label: 'Reader' },
+		{ panel: 'home', icon: homeIcon, label: 'Home' }
 	];
+
+	const setPanel = (panel: MenuVariations) => {
+		if (panel === 'home') {
+			goto('/');
+		} else {
+			$currentPanel = panel;
+		}
+	};
 </script>
 
 <div
@@ -21,22 +31,30 @@
 	{#each navItems as item}
 		<button
 			type="button"
-			class="nav-button aspect-square w-[50px] justify-center rounded-xl p-2"
-			onclick={() => ($currentPanel = item.panel)}
+			class="nav-button h-full w-fit items-center justify-center gap-2 rounded-xl {$currentPanel ===
+			item.panel
+				? 'px-4 py-3'
+				: 'p-3'}"
+			onclick={() => setPanel(item.panel)}
 			class:active={$currentPanel === item.panel}
 			aria-label={item.label}
 			title={item.label}
 		>
-			<img src={item.icon} alt={item.label} />
+			<img
+				src={item.icon}
+				alt={item.label}
+				class="h-full w-auto opacity-85 mix-blend-darken"
+				class:active={$currentPanel === item.panel}
+			/>
+			{#if $currentPanel === item.panel}
+				<p
+					class="block place-self-center align-middle text-lg font-medium text-[#005792] hover:no-underline md:hidden"
+				>
+					{item.label}
+				</p>
+			{/if}
 		</button>
 	{/each}
-	<a
-		href={toAssetHref($currentEdition?.downloadHref)}
-		class="nav-button block aspect-square w-[50px] justify-center rounded-xl p-2 md:hidden"
-		download={$currentEdition?.name}
-	>
-		<img src={downloadIcon} alt="Download" />
-	</a>
 </div>
 
 <style>
@@ -52,7 +70,15 @@
 		background-color: #e9f6ff;
 	}
 
-	.nav-button:is(:hover, .active) img {
-		filter: brightness(0) saturate(100%) hue-rotate(195deg) saturate(600%) brightness(65%);
+	img:not(.active) {
+		filter: saturate(0%);
+	}
+
+	.nav-button:not(:is(:hover, .active)) {
+		background-color: rgb(247, 247, 247);
+	}
+
+	.nav-button:not(:is(:hover, .active)) img {
+		opacity: 0.2;
 	}
 </style>
