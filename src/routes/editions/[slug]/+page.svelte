@@ -6,10 +6,12 @@
 
 	const pageTitle = $derived(`${data.correctEdition.name} | editions annexes`);
 	const pageDescription = $derived(
-		data.correctEdition.description || data.correctEdition.subtitle || 'Edition from editions annexes.'
+		data.correctEdition.description ||
+			data.correctEdition.subtitle ||
+			'Edition from editions annexes.'
 	);
-	const ogImage = $derived(getEditionCover(data.correctEdition.name));
-	const socialImageUrl = $derived(ogImage ? new URL(ogImage, page.url.href).href : '');
+
+	const socialImageUrl = 'https://medialab.github.io/annexes-website/og_image.png';
 </script>
 
 <svelte:head>
