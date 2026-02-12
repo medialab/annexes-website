@@ -2,12 +2,12 @@
 	import Header from '$lib/components/header.svelte';
 	import Footer from '$lib/components/footer.svelte';
 	import { page } from '$app/state';
-	import ogImage from '$lib/assets/og_image.png';
+	import { asset } from '$app/paths';
 
 	const pageTitle = 'About | editions annexes';
 	const pageDescription =
 		'Presentation du projet editions annexes: publier la recherche hors des formats editoriaux scientifiques classiques.';
-	const socialImageUrl = $derived(new URL(ogImage, page.url.origin).href);
+	const socialImageUrl = $derived(new URL(asset('/og_image.png'), page.url.origin).href);
 </script>
 
 <svelte:head>
