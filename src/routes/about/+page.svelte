@@ -1,7 +1,28 @@
 <script>
 	import Header from '$lib/components/header.svelte';
 	import Footer from '$lib/components/footer.svelte';
+	import { page } from '$app/state';
+	import ogImage from '$lib/assets/og_image.png';
+
+	const pageTitle = 'About | editions annexes';
+	const pageDescription =
+		'Presentation du projet editions annexes: publier la recherche hors des formats editoriaux scientifiques classiques.';
+	const socialImageUrl = $derived(new URL(ogImage, page.url.origin).href);
 </script>
+
+<svelte:head>
+	<title>{pageTitle}</title>
+	<meta name="description" content={pageDescription} />
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content={pageTitle} />
+	<meta property="og:description" content={pageDescription} />
+	<meta property="og:url" content={page.url.href} />
+	<meta property="og:image" content={socialImageUrl} />
+	<meta property="og:image:alt" content={pageTitle} />
+	<meta name="twitter:title" content={pageTitle} />
+	<meta name="twitter:description" content={pageDescription} />
+	<meta name="twitter:image" content={socialImageUrl} />
+</svelte:head>
 
 <Header></Header>
 <Footer></Footer>
