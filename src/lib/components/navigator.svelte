@@ -52,7 +52,7 @@
 			/>
 			{#if $currentPanel === item.panel}
 				<p
-					class="block place-self-center align-middle text-lg font-medium text-[#005792] hover:no-underline md:hidden"
+					class="block place-self-center align-middle font-medium text-[#005792] hover:no-underline md:hidden"
 				>
 					{item.label}
 				</p>

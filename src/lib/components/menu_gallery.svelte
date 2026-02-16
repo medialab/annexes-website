@@ -28,7 +28,7 @@
 <main class="viewer_main h-full">
 	{#await imagesPromise}
 		<div class="col-span-3 flex h-full items-center justify-center">
-			<p class="text-sm text-neutral-500">Loading gallery...</p>
+			<p class=" text-neutral-500">Loading gallery...</p>
 		</div>
 	{:then images}
 		{#if images.length > 0}
@@ -71,12 +71,12 @@
 			</button>
 		{:else}
 			<div class="col-span-3 flex h-full items-center justify-center">
-				<p class="text-sm text-neutral-500">No images found in gallery.</p>
+				<p class=" text-neutral-500">No images found in gallery.</p>
 			</div>
 		{/if}
 	{:catch error}
 		<div class="col-span-3 flex h-full items-center justify-center">
-			<p class="text-sm text-red-500">Error loading gallery.</p>
+			<p class=" text-red-500">Error loading gallery.</p>
 		</div>
 	{/await}
 </main>

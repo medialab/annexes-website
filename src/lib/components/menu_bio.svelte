@@ -47,31 +47,31 @@
 				<div class="flex-col gap-2 md:flex">
 					{#if hasValue(currentEdition.name)}
 						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-sm text-neutral-400 uppercase">title</p>
+							<p class="col-span-1 text-neutral-400 uppercase">title</p>
 							<p class="col-span-1">{currentEdition.name}</p>
 						</div>
 					{/if}
 					{#if hasValue(currentEdition.isbn)}
 						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-sm text-neutral-400 uppercase">isbn</p>
+							<p class="col-span-1 text-neutral-400 uppercase">isbn</p>
 							<p class="col-span-1">{currentEdition.isbn}</p>
 						</div>
 					{/if}
 					{#if hasValue(currentEdition.publishingDate)}
 						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-sm text-neutral-400 uppercase">published</p>
+							<p class="col-span-1 text-neutral-400 uppercase">published</p>
 							<p class="col-span-1">{currentEdition.publishingDate}</p>
 						</div>
 					{/if}
 					{#if hasValue(currentEdition.coPublisher)}
 						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-sm text-neutral-400 uppercase">co-publisher</p>
+							<p class="col-span-1 text-neutral-400 uppercase">co-publisher</p>
 							<p class="col-span-1">{currentEdition.coPublisher}</p>
 						</div>
 					{/if}
 					{#if downloadInfo.href}
 						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-sm text-neutral-400 uppercase">download</p>
+							<p class="col-span-1 text-neutral-400 uppercase">download</p>
 							<a href={downloadInfo.href} download={downloadInfo.filename}>
 								<p class="col-span-1">{downloadInfo.filename ?? currentEdition.downloadHref}</p>
 							</a>
@@ -79,31 +79,31 @@
 					{/if}
 					{#if hasValue(editorsText)}
 						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-sm text-neutral-400 uppercase">editors</p>
+							<p class="col-span-1 text-neutral-400 uppercase">editors</p>
 							<p class="col-span-1">{editorsText}</p>
 						</div>
 					{/if}
 					{#if hasValue(designersText)}
 						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-sm text-neutral-400 uppercase">design by</p>
+							<p class="col-span-1 text-neutral-400 uppercase">design by</p>
 							<p class="col-span-1">{designersText}</p>
 						</div>
 					{/if}
 					{#if hasValue(contributorsText)}
 						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-sm text-neutral-400 uppercase">contributors</p>
+							<p class="col-span-1 text-neutral-400 uppercase">contributors</p>
 							<p class="col-span-1">{contributorsText}</p>
 						</div>
 					{/if}
 					{#if hasValue(keywordsText)}
 						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-sm text-neutral-400 uppercase">topic</p>
+							<p class="col-span-1 text-neutral-400 uppercase">topic</p>
 							<p class="col-span-1">{keywordsText}</p>
 						</div>
 					{/if}
 					{#if hasValue(currentEdition.parentProject)}
 						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-sm text-neutral-400 uppercase">part of</p>
+							<p class="col-span-1 text-neutral-400 uppercase">part of</p>
 							{#if currentEdition.parentUrl}
 								<a
 									href={isExternalHref(currentEdition.parentUrl)
@@ -127,10 +127,10 @@
 			style={`grid-template-columns: repeat(${gridCols}, minmax(0, 1fr));`}
 		>
 			{#await pagesPromise}
-				<p class="col-span-full text-sm text-neutral-500">Loading pages...</p>
+				<p class="col-span-full text-neutral-500">Loading pages...</p>
 			{:then pages}
 				{#if pages.length === 0}
-					<p class="col-span-full text-sm text-neutral-500">No pages found.</p>
+					<p class="col-span-full text-neutral-500">No pages found.</p>
 				{:else}
 					{#each pages as page, i}
 						<img
@@ -151,7 +151,7 @@
 					{/each}
 				{/if}
 			{:catch _error}
-				<p class="col-span-full text-sm text-red-500">Could not load pages.</p>
+				<p class="col-span-full text-red-500">Could not load pages.</p>
 			{/await}
 		</div>
 	</div>

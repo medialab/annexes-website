@@ -27,7 +27,7 @@
 <svelte:window onkeydown={(e) => e.key === 'Escape' && goto(homeHref)} />
 
 <section
-	class="fixed z-10 flex h-dvh w-screen justify-start md:items-center md:justify-center lg:p-24"
+	class="fixed z-10 flex h-dvh w-screen justify-start md:items-center md:justify-center md:p-12 2xl:p-24"
 	transition:slide={{ duration: 500, easing: cubicOut, axis: 'y' }}
 >
 	<div
@@ -38,7 +38,7 @@
 		{/if}
 		<div
 			id="viewer"
-			class="flex h-full w-full flex-1 flex-col items-start justify-between gap-0 overflow-y-scroll border-0 pt-4 md:h-full md:items-center md:gap-4 md:rounded-2xl md:border md:border-neutral-200 md:bg-white md:p-4 md:pb-4"
+			class="flex h-full w-full flex-1 flex-col items-start justify-start gap-0 overflow-hidden border-0 pt-4 md:h-full md:items-center md:gap-4 md:rounded-2xl md:border md:border-neutral-200 md:bg-white md:p-4 md:pb-4"
 		>
 			<header class="hidden h-fit w-full items-center justify-between md:flex">
 				{#if currentEdition}
@@ -57,7 +57,7 @@
 					}}
 				></Button>
 			</header>
-			<div class="mb-4 flex h-fit w-full items-start justify-between md:hidden">
+			<div class="mb-4 flex h-fit w-full flex-none items-start justify-between md:hidden">
 				<div class="flex w-[80%] flex-col gap-0 text-wrap">
 					<h1>{currentEdition.name}</h1>
 					<p>{currentEdition.subtitle}</p>
@@ -71,13 +71,15 @@
 				</a>
 			</div>
 
-			{#if $currentPanel === 'book'}
-				<MenuBio {currentEdition} gridCols={gridColsNum} />
-			{:else if $currentPanel === 'gallery'}
-				<MenuGallery {currentEdition} />
-			{:else if $currentPanel === 'reader'}
-				<MenuReader {currentEdition} />
-			{/if}
+			<div class="h-full min-h-0 w-full flex-1">
+				{#if $currentPanel === 'book'}
+					<MenuBio {currentEdition} gridCols={11 - gridColsNum} />
+				{:else if $currentPanel === 'gallery'}
+					<MenuGallery {currentEdition} />
+				{:else if $currentPanel === 'reader'}
+					<MenuReader {currentEdition} />
+				{/if}
+			</div>
 			<footer class="hidden h-fit w-full items-center justify-between md:flex">
 				<Button
 					label="Download"

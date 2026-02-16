@@ -50,14 +50,8 @@
 @plugin '@tailwindcss/typography';
 
 @theme {
-	--font-sans: 'Ronzino',
-		-apple-system,
-		BlinkMacSystemFont,
-		'Segoe UI',
-		Roboto,
-		Helvetica,
-		Arial,
-		sans-serif;
+	--font-sans:
+		'Ronzino', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 @layer statuses {
@@ -74,15 +68,15 @@
 	}
 
 	.blank {
-		@apply bg-white border-dashed border-neutral-200 transition-all delay-75 duration-125 px-2;
+		@apply border-dashed border-neutral-200 bg-white px-2 transition-all delay-75 duration-125;
 	}
 
 	.disabled {
-		@apply opacity-50 cursor-not-allowed;
+		@apply cursor-not-allowed opacity-50;
 	}
 
 	.blank:hover {
-		@apply transition-all delay-75 duration-125 border-neutral-200 border-solid border;
+		@apply border border-solid border-neutral-200 transition-all delay-75 duration-125;
 	}
 
 	.pill:hover {
@@ -92,19 +86,15 @@
 
 @layer base {
 	h1 {
-		@apply text-3xl leading-none md:text-4xl font-normal;
+		@apply text-3xl leading-none font-normal md:text-4xl;
 	}
 
 	h2 {
-		@apply text-xl leading-none md:text-2xl font-normal;
+		@apply text-xl leading-none font-normal md:text-2xl;
 	}
 
 	h3 {
-		@apply text-lg leading-none md:text-xl font-normal;
-	}
-
-	p {
-		@apply text-base leading-[140%] font-normal;
+		@apply text-lg leading-none font-normal md:text-xl;
 	}
 
 	a,
@@ -113,7 +103,7 @@
 	}
 
 	.pill {
-		@apply flex w-fit place-items-center items-center justify-center gap-2 rounded-xl bg-[#F5F5F5]  py-2 transition-all duration-7 border-neutral-200;
+		@apply flex w-fit place-items-center items-center justify-center gap-2 rounded-xl border-neutral-200 bg-[#F5F5F5] py-2 transition-all duration-7;
 	}
 
 	.pill p {
@@ -133,15 +123,15 @@
 	}
 
 	html {
-		@apply min-h-full w-full h-dvh overflow-hidden font-sans transition-all duration-150 ease-in-out;
+		@apply h-dvh min-h-full w-full overflow-hidden font-sans transition-all duration-150 ease-in-out;
 	}
 
 	body {
-		@apply md:min-h-full h-dvh w-full overflow-hidden font-sans;
+		@apply h-dvh w-full overflow-hidden font-sans md:min-h-full;
 	}
 
 	p {
-		@apply w-fit font-sans text-base font-normal tracking-[-0.03em] no-underline decoration-from-font md:text-base lg:text-lg;
+		@apply w-fit font-sans text-sm font-normal tracking-[-0.03em] no-underline decoration-from-font;
 		text-underline-position: from-font;
 		text-decoration-skip-ink: none;
 	}
@@ -155,8 +145,9 @@
 		@apply inline-flex h-fit w-fit cursor-pointer border-none bg-transparent p-[2px] text-inherit no-underline;
 	}
 
-	a:hover, button:hover {
-		@apply no-underline md:underline underline-offset-2;
+	a:hover,
+	button:hover {
+		@apply no-underline underline-offset-2 md:underline;
 	}
 
 	*,
@@ -179,7 +170,7 @@
 	}
 
 	.viewer_main {
-		@apply relative  grid overflow-hidden  md:h-full min-h-0 w-full grid-cols-2 grid-rows-[2fr_0.1fr] md:grid-cols-[0.1fr_1fr_0.1fr] md:grid-rows-1 items-center rounded-3xl border-0 md:border-2 border-solid border-neutral-200 bg-white md:bg-neutral-100;
+		@apply relative grid min-h-0 w-full grid-cols-2 grid-rows-[2fr_0.1fr] items-center overflow-hidden rounded-3xl border-0 border-solid border-neutral-200 bg-white md:h-full md:grid-cols-[0.1fr_1fr_0.1fr] md:grid-rows-1 md:border-2 md:bg-neutral-100;
 	}
 }
 
