@@ -53,14 +53,14 @@
 				<div class="grid h-full min-h-0 w-fit grid-cols-1 items-stretch md:w-full md:grid-cols-2">
 					{#each visiblePages as page}
 						<div
-							class="col-span-1 flex h-full min-h-0 w-fit items-center justify-center overflow-hidden md:h-fit md:bg-transparent md:py-4"
+							class="col-span-1 flex h-full min-h-0 w-fit items-center justify-center overflow-clip md:bg-transparent md:py-4"
 						>
 							<img
 								src={page}
 								alt=""
 								loading="lazy"
 								decoding="async"
-								class="protected-image z-[0] h-full w-auto overflow-clip rounded-2xl border-2 border-solid border-neutral-100 object-contain md:w-full md:border-0"
+								class="protected-image z-[0] h-full w-auto overflow-clip rounded-2xl border-2 border-solid border-neutral-100 object-contain md:w-full md:rounded-none md:border-0"
 								draggable="false"
 								oncontextmenu={preventDefault}
 								ondragstart={preventDefault}
