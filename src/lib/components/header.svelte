@@ -27,7 +27,7 @@
 			<Button label="About" icon={infoIcon} href={aboutHref} onClick={() => goto(aboutHref)}
 			></Button>
 		{:else}
-			<Button href={homeHref} icon={homeIcon} onClick={() => goto(homeHref)}></Button>
+			<Button href={homeHref} icon={homeIcon} onClick={() => goto(homeHref)}></Button>	
 		{/if}
 	</div>
 	<div class="md:hidden">
