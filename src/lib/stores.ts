@@ -18,113 +18,151 @@ export const DND_FOOTER_CONTAINER = 'footer-dropzone';
 export const isAboutOpen = writable(false);
 
 const coverModules = import.meta.glob<string>('$lib/media/editions/**/thumb.{jpg,jpeg,png}', {
-    eager: true,
-    import: 'default'
+	eager: true,
+	import: 'default'
 });
 
 const pageModules = import.meta.glob<string>('$lib/media/editions/**/page-*.{jpg,jpeg,png}', {
-    import: 'default'
+	import: 'default'
 });
 
+const galleryModules = import.meta.glob<string>(
+	'$lib/media/editions/**/images/*.{jpg,jpeg,png,svg}',
+	{
+		import: 'default'
+	}
+);
+
 export function toAssetHref(pathname?: string) {
-    if (!pathname) return undefined;
-    return asset(pathname.startsWith('/') ? pathname : `/${pathname}`);
+	if (!pathname) return undefined;
+	return asset(pathname.startsWith('/') ? pathname : `/${pathname}`);
 }
 
 function ensurePdfFilename(value?: string | null): string | undefined {
-    const normalized = value?.trim();
-    if (!normalized) return undefined;
-    return normalized.toLowerCase().endsWith('.pdf') ? normalized : `${normalized}.pdf`;
+	const normalized = value?.trim();
+	if (!normalized) return undefined;
+	return normalized.toLowerCase().endsWith('.pdf') ? normalized : `${normalized}.pdf`;
 }
 
 function filenameFromPath(pathname?: string | null): string | undefined {
-    if (!pathname) return undefined;
-    const normalized = pathname.split('/').pop();
-    return ensurePdfFilename(normalized);
+	if (!pathname) return undefined;
+	const normalized = pathname.split('/').pop();
+	return ensurePdfFilename(normalized);
 }
 
-export function getEditionDownloadInfo(
-    edition?: Pick<Edition, 'downloadHref' | 'name'> | null
-): { href?: string; filename?: string } {
-    const href = toAssetHref(edition?.downloadHref);
-    if (!href) return {};
+export function getEditionDownloadInfo(edition?: Pick<Edition, 'downloadHref' | 'name'> | null): {
+	href?: string;
+	filename?: string;
+} {
+	const href = toAssetHref(edition?.downloadHref);
+	if (!href) return {};
 
-    const filename = ensurePdfFilename(edition?.name) ?? filenameFromPath(edition?.downloadHref);
-    return { href, filename };
+	const filename = ensurePdfFilename(edition?.name) ?? filenameFromPath(edition?.downloadHref);
+	return { href, filename };
 }
 
 function normalizeEditionKey(value?: string | null): string {
-    if (!value) return '';
+	if (!value) return '';
 
-    return value
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase()
-        .replace(/[^\w]+/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
+	return value
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.toLowerCase()
+		.replace(/[^\w]+/g, '-')
+		.replace(/-+/g, '-')
+		.replace(/^-|-$/g, '');
 }
 
 function getEditionAndFileFromKey(key: string): { edition: string; file: string } | null {
-    const match = key.match(/\/media\/editions\/([^/]+)\/([^/]+)$/i);
-    if (!match) return null;
+	const parts = key.split('/');
+	const editionsIndex = parts.indexOf('editions');
+	if (editionsIndex === -1 || editionsIndex + 1 >= parts.length) return null;
 
-    return {
-        edition: normalizeEditionKey(match[1]),
-        file: match[2].toLowerCase()
-    };
+	return {
+		edition: normalizeEditionKey(parts[editionsIndex + 1]),
+		file: parts[parts.length - 1].toLowerCase()
+	};
 }
 
 const editionCoverIndex: Record<string, string> = {};
 for (const [key, url] of Object.entries(coverModules)) {
-    const parsed = getEditionAndFileFromKey(key);
-    if (!parsed) continue;
-    editionCoverIndex[parsed.edition] = url;
+	const parsed = getEditionAndFileFromKey(key);
+	if (!parsed) continue;
+	editionCoverIndex[parsed.edition] = url;
 }
 
 const editionPagesCache = new Map<string, Promise<string[]>>();
+const editionGalleryCache = new Map<string, Promise<string[]>>();
 
 export function getEditionCover(editionName?: string | null): string {
-    const normalizedName = normalizeEditionKey(editionName);
-    return editionCoverIndex[normalizedName] ?? '';
+	const normalizedName = normalizeEditionKey(editionName);
+	return editionCoverIndex[normalizedName] ?? '';
 }
 
 export async function getEditionPages(editionName?: string | null): Promise<string[]> {
-    const normalizedName = normalizeEditionKey(editionName);
-    if (!normalizedName) return [];
+	const normalizedName = normalizeEditionKey(editionName);
+	if (!normalizedName) return [];
 
-    const cached = editionPagesCache.get(normalizedName);
-    if (cached) return cached;
+	const cached = editionPagesCache.get(normalizedName);
+	if (cached) return cached;
 
-    const loaderPromise = (async () => {
-        const matchingPages = Object.entries(pageModules)
-            .map(([key, load]) => {
-                const parsed = getEditionAndFileFromKey(key);
-                if (!parsed || parsed.edition !== normalizedName) return null;
-                const pageMatch = parsed.file.match(/^page-(\d+)\.(jpg|jpeg|png)$/);
-                if (!pageMatch) return null;
-                return { page: Number(pageMatch[1]), load };
-            })
-            .filter((item): item is { page: number; load: () => Promise<string> } => item !== null)
-            .sort((a, b) => a.page - b.page);
+	const loaderPromise = (async () => {
+		const matchingPages = Object.entries(pageModules)
+			.map(([key, load]) => {
+				const parsed = getEditionAndFileFromKey(key);
+				if (!parsed || parsed.edition !== normalizedName) return null;
+				const pageMatch = parsed.file.match(/^page-(\d+)\.(jpg|jpeg|png)$/);
+				if (!pageMatch) return null;
+				return { page: Number(pageMatch[1]), load };
+			})
+			.filter((item): item is { page: number; load: () => Promise<string> } => item !== null)
+			.sort((a, b) => a.page - b.page);
 
-        return Promise.all(matchingPages.map((item) => item.load()));
-    })();
+		return Promise.all(matchingPages.map((item) => item.load()));
+	})();
 
-    editionPagesCache.set(normalizedName, loaderPromise);
+	editionPagesCache.set(normalizedName, loaderPromise);
 
-    try {
-        return await loaderPromise;
-    } catch (error) {
-        editionPagesCache.delete(normalizedName);
-        throw error;
-    }
+	try {
+		return await loaderPromise;
+	} catch (error) {
+		editionPagesCache.delete(normalizedName);
+		throw error;
+	}
+}
+
+export async function getEditionGalleryImages(editionName?: string | null): Promise<string[]> {
+	const normalizedName = normalizeEditionKey(editionName);
+	if (!normalizedName) return [];
+
+	const cached = editionGalleryCache.get(normalizedName);
+	if (cached) return cached;
+
+	const loaderPromise = (async () => {
+		const matchingImages = Object.entries(galleryModules)
+			.filter(([key]) => {
+				const parsed = getEditionAndFileFromKey(key);
+				return parsed && parsed.edition === normalizedName;
+			})
+			.sort(([keyA], [keyB]) => keyA.localeCompare(keyB));
+
+		return Promise.all(matchingImages.map(([, load]) => load()));
+	})();
+
+	editionGalleryCache.set(normalizedName, loaderPromise);
+
+	try {
+		return await loaderPromise;
+	} catch (error) {
+		editionGalleryCache.delete(normalizedName);
+		throw error;
+	}
 }
 
 export function openPanel(edition: Edition) {
-    console.log('edition dropped:', edition);
-    currentPanel.set('book');
-    isFooterOpen.set(false);
-    goto(resolve(`/editions/${edition.name}`));
-    currentEdition.set(edition);
+	console.log('edition dropped:', edition);
+	currentPanel.set('book');
+	isFooterOpen.set(false);
+	goto(resolve(`/editions/${edition.name}`));
+	currentEdition.set(edition);
 }

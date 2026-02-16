@@ -417,22 +417,31 @@
 		cleanupDragGhost();
 
 		const rect = target.getBoundingClientRect();
+		// Extract raw img if possible for better performance
+		const img = target.querySelector('img');
+		const dragElement = img
+			? (img.cloneNode(true) as HTMLElement)
+			: (target.cloneNode(true) as HTMLElement);
+
+		dragElement.style.width = `${rect.width}px`;
+		dragElement.style.height = `${rect.height}px`;
+		dragElement.style.opacity = '1';
+		dragElement.style.position = 'fixed';
+		dragElement.style.top = '-9999px';
+		dragElement.style.left = '-9999px';
+		dragElement.style.zIndex = '1000';
+		dragElement.style.pointerEvents = 'none';
+
+		document.body.appendChild(dragElement);
+		dragGhostElement = dragElement;
+
 		const offsetX = event.clientX - rect.left;
 		const offsetY = event.clientY - rect.top;
 
-		const ghost = target.cloneNode(true) as HTMLElement;
-		ghost.classList.remove('opacity-0', 'invisible', 'hidden');
-		ghost.style.opacity = '1';
-		ghost.style.position = 'fixed';
-		ghost.style.top = '-9999px';
-		ghost.style.left = '-9999px';
-		ghost.style.pointerEvents = 'none';
-		document.body.appendChild(ghost);
-		dragGhostElement = ghost;
-
 		try {
-			event.dataTransfer.setDragImage(ghost, offsetX, offsetY);
-		} catch {
+			event.dataTransfer.setDragImage(dragElement, offsetX, offsetY);
+		} catch (e) {
+			console.error('Failed to set drag image:', e);
 			cleanupDragGhost();
 		}
 	}
@@ -508,7 +517,6 @@
 				}
 			}}
 			ondragstart={handleNativeDragStart}
-			ondragend={handleNativeDragEnd}
 			onpointerdown={handleCoverPointerDown}
 			onpointerenter={() => handleCoverPointerEnter(index)}
 			onpointerleave={() => handleCoverPointerLeave(index)}
