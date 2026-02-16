@@ -35,13 +35,19 @@
 </svelte:head>
 
 {#key page.url.pathname}
-	<main in:slide={{ duration: 500, delay: 100 }} out:slide={{ duration: 300 }} class="relative z-20">
+	<main
+		in:slide={{ duration: 500, delay: 100 }}
+		out:slide={{ duration: 300 }}
+		class="relative z-20"
+	>
 		{@render children()}
 	</main>
 {/key}
 
-<div class="relative z-10 h-dvh w-full overflow-y-scroll md:fixed md:m-0">
-	<Canvas editions={$allEditions}></Canvas>
-</div>
+{#if $allEditions}
+	<div class="relative z-10 h-dvh w-full overflow-y-scroll md:fixed md:m-0">
+		<Canvas editions={$allEditions}></Canvas>
+	</div>
+{/if}
 
 <CursorPill></CursorPill>

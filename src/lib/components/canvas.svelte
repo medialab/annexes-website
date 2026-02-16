@@ -437,12 +437,47 @@
 		}
 	}
 
+	let isReady = $state(false);
+
 	function cleanupDragGhost() {
 		if (!dragGhostElement) return;
 		dragGhostElement.remove();
 		dragGhostElement = null;
 	}
+
+	onMount(() => {
+		if (!host || typeof window === 'undefined') return;
+
+		syncFooterVisibility();
+		recomputePlacements(dummyEditions.length);
+
+		// Small delay to ensure the first paint with correct styles
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
+				isReady = true;
+			});
+		});
+
+		const resizeObserver = new ResizeObserver(() => {
+			recomputePlacements(dummyEditions.length);
+		});
+		resizeObserver.observe(host);
+
+		return () => {
+			resizeObserver.disconnect();
+			finishCoverDrag();
+		};
+	});
 </script>
+
+<svelte:head>
+	{#each dummyEditions as edition}
+		{@const coverImg = getEditionCover(edition.name)}
+		{#if coverImg}
+			<link rel="preload" as="image" href={coverImg} fetchpriority="high" />
+		{/if}
+	{/each}
+</svelte:head>
 
 <svelte:window
 	onpointermove={handleWindowPointerMove}
@@ -454,7 +489,9 @@
 
 <section
 	bind:this={host}
-	class="group/canvas relative top-12 flex w-full flex-col items-center justify-center gap-20 overflow-y-scroll py-24 md:top-0 md:h-dvh md:w-screen md:gap-0 md:overflow-hidden md:py-0"
+	class="group/canvas relative top-12 flex w-full flex-col items-center justify-center gap-20 overflow-y-scroll py-24 transition-opacity duration-500 md:top-0 md:h-dvh md:w-screen md:gap-0 md:overflow-hidden md:py-0"
+	class:opacity-0={!isReady}
+	class:pointer-events-none={!isReady}
 >
 	{#each dummyEditions as edition, index}
 		{@const coverImg = getEditionCover(edition.name)}
@@ -475,11 +512,19 @@
 			onpointerdown={handleCoverPointerDown}
 			onpointerenter={() => handleCoverPointerEnter(index)}
 			onpointerleave={() => handleCoverPointerLeave(index)}
-			class="canvas-cover absolute hidden cursor-grab overflow-hidden rounded-md bg-white/90 opacity-100 transition-[opacity,box-shadow,left,top] duration-250 ease-out group-has-[.canvas-cover:hover]/canvas:opacity-10 hover:!opacity-100 hover:shadow-[0_12px_30px_rgba(15,23,42,0.16)] focus-visible:!opacity-100 active:cursor-grabbing md:block"
+			class="canvas-cover absolute hidden cursor-grab overflow-hidden rounded-md bg-white/90 opacity-0 transition-[opacity,box-shadow,left,top] duration-250 ease-out group-has-[.canvas-cover:hover]/canvas:opacity-10 hover:opacity-100! hover:shadow-[0_12px_30px_rgba(15,23,42,0.16)] focus-visible:opacity-100! active:cursor-grabbing md:block"
+			class:opacity-100={placements[index]}
 			style={getDesktopStyle(index)}
 			aria-label={edition.name}
 		>
-			<img src={coverImg} alt={edition.name} class="h-full w-full object-contain" />
+			<img
+				src={coverImg}
+				alt={edition.name}
+				class="max-h-300px h-full w-full object-contain"
+				loading="eager"
+				fetchpriority="high"
+				decoding="async"
+			/>
 		</button>
 		<!-- mobile version -->
 		<button
