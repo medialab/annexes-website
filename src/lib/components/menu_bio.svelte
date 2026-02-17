@@ -1,6 +1,13 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	let { currentEdition, gridCols } = $props();
-	import { getEditionDownloadInfo, getEditionPages, toAssetHref } from '$lib/stores';
+	import {
+		getEditionDownloadInfo,
+		getEditionPages,
+		toAssetHref,
+		currentPanel,
+		currentReaderPage
+	} from '$lib/stores';
 	import { isExternalHref, preventDefault } from '$lib/utils';
 	const pagesPromise = $derived(getEditionPages(currentEdition?.name ?? ''));
 	const downloadInfo = $derived(getEditionDownloadInfo(currentEdition));
@@ -19,6 +26,11 @@
 			.map((value) => value.trim())
 			.filter((value) => value.length > 0)
 			.join(', ');
+	}
+
+	function navigateToPage(pageNum: number) {
+		currentPanel.set('reader');
+		currentReaderPage.set(pageNum);
 	}
 </script>
 
@@ -147,6 +159,7 @@
 							oncopy={preventDefault}
 							oncut={preventDefault}
 							onselectstart={preventDefault}
+							onclick={() => navigateToPage(i + 1)}
 						/>
 					{/each}
 				{/if}

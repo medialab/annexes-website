@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import DeviceInfo from 'svelte-device-info';
-	import { isMobile } from '$lib/stores';
+	import { currentEdition, isMobile, isTitleShowing } from '$lib/stores';
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
-	import { slide } from 'svelte/transition';
+	import { fly, slide } from 'svelte/transition';
 	import { page } from '$app/state';
 	import Canvas from '$lib/components/canvas.svelte';
 	import { allEditions } from '$lib/stores';
 	import CursorPill from '$lib/components/cursor_pill.svelte';
+	import { cubicInOut } from 'svelte/easing';
 
 	let { children } = $props();
 
@@ -49,5 +50,35 @@
 		<Canvas editions={$allEditions}></Canvas>
 	</div>
 {/if}
+
+<main class="absolute -z-10 flex h-dvh w-dvw items-center justify-center md:pointer-events-none">
+	{#if $isTitleShowing}
+		<div
+			class="pointer-events-none absolute z-0 flex h-dvh w-screen items-center justify-center opacity-20"
+		>
+			<h1 transition:fly={{ y: 50, duration: 300, easing: cubicInOut }} class="text-6xl">
+				{$currentEdition?.name}
+			</h1>
+		</div>
+	{:else}
+		<div
+			class="flex h-dvh w-full flex-col items-center justify-start overflow-scroll bg-neutral-100 p-4 py-30 md:h-fit md:w-4/5 md:justify-center md:overflow-hidden md:py-0"
+		>
+			<h1 class="text-neutral-300" transition:fly={{ y: 50, duration: 300, easing: cubicInOut }}>
+				éditions annexes est un projet éditorial qui publie des résultats de recherche en dehors des
+				circuits classiques de l’édition scientifique. Il ne prétend pas s’y substituer, mais
+				propose de la compléter, en élargissant l’éventail des formats éditoriaux grâce auxquels une
+				recherche peut se partager : modes d’emploi, exercices, protocoles, zine, matériau empirique
+				brut, poster, etc. éditions annexes propose en retour de s’interroger sur le rôle des
+				formats dans l’édition scientifique. L’idée directrice du projet est d’inverser le rapport
+				d’importance entre le texte d’une publication et son péritexte (notes de bas de page,
+				illustrations et figures, annexes), grâce à un travail d’édition et de design graphique
+				adapté à chaque objet. Enfin, ce mode de publication est rapide, peu onéreux et entièrement
+				autogéré, permettant ainsi de fabriquer des comptes rendus d’une recherche vivante, en train
+				de se faire.
+			</h1>
+		</div>
+	{/if}
+</main>
 
 <CursorPill></CursorPill>

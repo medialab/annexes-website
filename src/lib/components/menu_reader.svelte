@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getEditionPages } from '$lib/stores';
-	import { isMobile } from '$lib/stores';
+	import { isMobile, currentReaderPage } from '$lib/stores';
 	import { preventDefault } from '$lib/utils';
 
 	import arrowLeft from '$lib/assets/icons/arrowLeft.svg';
@@ -8,20 +8,19 @@
 
 	let { currentEdition } = $props();
 
-	let currentPage = $state(0);
 	const pagesPromise = $derived(getEditionPages(currentEdition?.name ?? ''));
 
 	function nextPage(totalPages: number) {
-		if (currentPage + 1 < totalPages) currentPage += 1;
+		if ($currentReaderPage + 1 < totalPages) $currentReaderPage += 1;
 	}
 
 	function prevPage() {
-		if (currentPage - 1 >= 0) currentPage -= 1;
+		if ($currentReaderPage - 1 >= 0) $currentReaderPage -= 1;
 	}
 
 	$effect(() => {
 		currentEdition?.name;
-		currentPage = 0;
+		$currentReaderPage = 0;
 	});
 </script>
 
@@ -32,12 +31,12 @@
 		</div>
 	{:then pages}
 		{@const pagesPerView = $isMobile ? 1 : 2}
-		{@const visiblePages = pages.slice(currentPage, currentPage + pagesPerView)}
+		{@const visiblePages = pages.slice($currentReaderPage, $currentReaderPage + pagesPerView)}
 		<button
 			id="arrow_left"
 			class="z-3 col-start-1 row-start-2 flex h-fit w-full items-center justify-center bg-white px-2 py-4 disabled:text-neutral-200 md:col-start-auto md:row-start-auto md:bg-transparent md:px-6 md:py-0"
 			onclick={prevPage}
-			disabled={currentPage <= 0}
+			disabled={$currentReaderPage <= 0}
 			data-hover="Previous page"
 		>
 			<img src={arrowLeft} alt="Arrow Left" class="" />
@@ -77,7 +76,7 @@
 			id="arrow_right"
 			class="z-3 col-start-2 row-start-2 flex h-full w-full items-center justify-center bg-white px-2 disabled:text-neutral-200 md:col-start-auto md:row-start-auto md:bg-transparent md:px-6"
 			onclick={() => nextPage(pages.length)}
-			disabled={currentPage + 1 >= pages.length}
+			disabled={$currentReaderPage + 1 >= pages.length}
 			data-hover="Next page"
 		>
 			<img src={arrowRight} alt="Arrow Right" class="" />
