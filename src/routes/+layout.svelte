@@ -10,6 +10,8 @@
 	import { allEditions } from '$lib/stores';
 	import CursorPill from '$lib/components/cursor_pill.svelte';
 	import { cubicInOut } from 'svelte/easing';
+	import annexesIcon from '$lib/assets/icons/annexes.png';
+	import { goto } from '$app/navigation';
 
 	let { children } = $props();
 
@@ -44,14 +46,34 @@
 		{@render children()}
 	</main>
 {/key}
+<div class="fixed top-4 right-0 left-0 z-30 h-10 w-full p-2">
+	<img src={annexesIcon} alt="annexes logo" class="h-full place-self-center align-middle" />
+</div>
+
+<div class="fixed right-0 bottom-4 left-0 z-30 flex h-10 w-full items-center justify-center p-2">
+	<a
+		href="#"
+		onclick={() => goto(page.url.pathname === '/about' ? '/' : '/about')}
+		class="inline-flex w-fit bg-white p-2"
+	>
+		{#if page.url.pathname === '/about'}
+			<p>back to editiones annexes</p>
+		{:else}
+			<p>c'est quoi annexes?</p>
+		{/if}
+	</a>
+</div>
 
 {#if $allEditions}
-	<div class="relative z-10 h-dvh w-full overflow-y-scroll md:fixed md:m-0">
+	<div
+		class="relative z-10 h-dvh w-full overflow-y-scroll md:fixed md:m-0"
+		style="opacity: {page.url.pathname === '/about' ? 0 : 1};"
+	>
 		<Canvas editions={$allEditions}></Canvas>
 	</div>
 {/if}
 
-<main class="absolute -z-10 flex h-dvh w-dvw items-center justify-center md:pointer-events-none">
+<!--<main class="absolute -z-10 flex h-dvh w-dvw items-center justify-center md:pointer-events-none">
 	{#if $isTitleShowing}
 		<div
 			class="pointer-events-none absolute z-0 flex h-dvh w-screen items-center justify-center opacity-20"
@@ -79,6 +101,6 @@
 			</h1>
 		</div>
 	{/if}
-</main>
+</main>-->
 
 <CursorPill></CursorPill>

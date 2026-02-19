@@ -4,6 +4,7 @@
 	import type { Edition } from '$lib/types';
 	import { cubicInOut } from 'svelte/easing';
 	import { draw, fly } from 'svelte/transition';
+	import Gradient from './gradient.svelte';
 
 	let { editions = [] } = $props<{ editions?: Edition[] }>();
 
@@ -17,12 +18,20 @@
 		)
 	);
 
+	$inspect('canvasCovers:', canvasCovers);
+
 	type Placement = {
 		x: number;
 		y: number;
 		width: number;
 		height: number;
 		rotate: number;
+	};
+
+	type PlacementResult = {
+		placements: Placement[];
+		usedWidth: number;
+		usedHeight: number;
 	};
 
 	type Point = {
@@ -56,6 +65,8 @@
 	let hoveredIndex = $state<number | null>(null);
 	let pointer = $state<{ x: number; y: number; active: boolean }>({ x: 0, y: 0, active: false });
 	let viewport = $state<{ width: number; height: number }>({ width: 0, height: 0 });
+	let cameraOffset = $state<Point>({ x: 0, y: 0 });
+	let cameraTarget = $state<Point>({ x: 0, y: 0 });
 	let mobileRotations = $state<number[]>([]);
 	let connectionLines = $state<ConnectionLine[]>([]);
 	let areConnectionLinesVisible = $state(false);
@@ -64,19 +75,57 @@
 
 	const coverElements = new Map<string, HTMLButtonElement>();
 	let connectionRefreshFrame: number | null = null;
-
-	const coverSeparation = 50;
+	let cameraAnimationFrame: number | null = null;
 
 	const scenePadding = 100;
-	const minCoverGap = 12;
-	const gapRandomness = 0.65;
-	const coverRotationMin = -4;
-	const coverRotationMax = 4;
 	const mobileRotationMin = -6;
 	const mobileRotationMax = 6;
 	const pointerInfluenceRadius = 1200;
 	const pointerMaxShift = 400;
 	const dimmedCoverOpacity = 0.18;
+	const cameraEase = 0.12;
+	const cameraSnapThreshold = 0.2;
+	const cameraDragStrength = 0.9;
+	const stitchPointSpread = 2.5;
+	const stitchPointRatios: Point[] = [
+		{ x: 0.5, y: 0.5 },
+		{ x: 0.57, y: 0.48 },
+		{ x: 0.46, y: 0.56 },
+		{ x: 0.42, y: 0.46 },
+		{ x: 0.61, y: 0.55 },
+		{ x: 0.53, y: 0.4 },
+		{ x: 0.38, y: 0.54 },
+		{ x: 0.48, y: 0.63 },
+		{ x: 0.66, y: 0.47 },
+		{ x: 0.58, y: 0.62 },
+		{ x: 0.35, y: 0.45 },
+		{ x: 0.44, y: 0.36 },
+		{ x: 0.63, y: 0.39 },
+		{ x: 0.31, y: 0.56 },
+		{ x: 0.53, y: 0.69 },
+		{ x: 0.69, y: 0.58 },
+		{ x: 0.4, y: 0.67 },
+		{ x: 0.29, y: 0.39 },
+		{ x: 0.6, y: 0.31 },
+		{ x: 0.74, y: 0.46 },
+		{ x: 0.47, y: 0.29 },
+		{ x: 0.26, y: 0.5 },
+		{ x: 0.68, y: 0.67 },
+		{ x: 0.37, y: 0.29 },
+		{ x: 0.55, y: 0.77 },
+		{ x: 0.77, y: 0.56 },
+		{ x: 0.25, y: 0.63 },
+		{ x: 0.33, y: 0.73 },
+		{ x: 0.7, y: 0.3 },
+		{ x: 0.18, y: 0.46 },
+		{ x: 0.5, y: 0.2 },
+		{ x: 0.82, y: 0.42 },
+		{ x: 0.64, y: 0.8 },
+		{ x: 0.22, y: 0.34 },
+		{ x: 0.42, y: 0.82 },
+		{ x: 0.8, y: 0.68 }
+	];
+	const stitchRotations = [-3.2, -1.8, -0.9, 0.6, 1.7, 2.9, -2.5, 0.2, 1.1, -1.2, 2.1, -3.6];
 
 	function clamp(value: number, min: number, max: number) {
 		return Math.min(Math.max(value, min), max);
@@ -86,79 +135,119 @@
 		return min + Math.random() * (max - min);
 	}
 
-	function shuffledIndices(length: number): number[] {
-		const indices = Array.from({ length }, (_, i) => i);
-		for (let i = indices.length - 1; i > 0; i -= 1) {
-			const j = Math.floor(Math.random() * (i + 1));
-			[indices[i], indices[j]] = [indices[j], indices[i]];
+	function getSquareSpiralOffset(index: number): Point {
+		if (index <= 0) return { x: 0, y: 0 };
+
+		let x = 0;
+		let y = 0;
+		let visited = 0;
+		let stepLength = 1;
+		let directionIndex = 0;
+		const directions: Point[] = [
+			{ x: 1, y: 0 },
+			{ x: 0, y: 1 },
+			{ x: -1, y: 0 },
+			{ x: 0, y: -1 }
+		];
+
+		while (visited < index) {
+			for (let repeat = 0; repeat < 2; repeat += 1) {
+				const direction = directions[directionIndex % directions.length];
+				for (let step = 0; step < stepLength; step += 1) {
+					x += direction.x;
+					y += direction.y;
+					visited += 1;
+					if (visited === index) {
+						return { x, y };
+					}
+				}
+				directionIndex += 1;
+			}
+			stepLength += 1;
 		}
-		return indices;
+
+		return { x, y };
 	}
 
 	function createPlacements(
 		sceneWidth: number,
 		sceneHeight: number,
 		coverSizes: CoverSize[]
-	): Placement[] {
+	): PlacementResult {
 		const count = coverSizes.length;
-		if (count === 0 || sceneWidth === 0 || sceneHeight === 0) return [];
-
-		const minX = scenePadding;
-		const minY = scenePadding;
-		const maxX = sceneWidth - scenePadding;
-		const maxY = sceneHeight - scenePadding;
-		const placements: Placement[] = Array.from({ length: count });
-		const shuffled = shuffledIndices(count);
-		const cols = Math.max(1, Math.ceil(Math.sqrt(count)));
-		const rows: number[][] = [];
-
-		for (let i = 0; i < count; i += cols) {
-			rows.push(shuffled.slice(i, i + cols));
+		if (count === 0) {
+			return {
+				placements: [],
+				usedWidth: sceneWidth,
+				usedHeight: sceneHeight
+			};
 		}
 
-		const rowHeights = rows.map((row) =>
-			row.reduce((maxHeight, itemIndex) => Math.max(maxHeight, coverSizes[itemIndex].height), 0)
+		const placements: Placement[] = Array.from({ length: count });
+		const stitchCanvasWidth = Math.max(sceneWidth * 1.7, 1500);
+		const stitchCanvasHeight = Math.max(sceneHeight * 1.7, 1500);
+		const overflowSquareStep = Math.max(
+			Math.min(stitchCanvasWidth, stitchCanvasHeight) * 0.12,
+			180
 		);
-		const rowGaps = rows.map((_, rowIndex) => {
-			if (rowIndex === rows.length - 1) return 0;
-			const randomGap = coverSeparation * (1 + randomBetween(-gapRandomness, gapRandomness));
-			return Math.max(minCoverGap, randomGap);
-		});
+		let minXUsed = Number.POSITIVE_INFINITY;
+		let minYUsed = Number.POSITIVE_INFINITY;
+		let maxXUsed = scenePadding;
+		let maxYUsed = scenePadding;
 
-		const totalHeight =
-			rowHeights.reduce((sum, height) => sum + height, 0) +
-			rowGaps.reduce((sum, gap) => sum + gap, 0);
-		let yCursor = clamp((sceneHeight - totalHeight) / 2, minY, maxY);
+		for (let index = 0; index < count; index += 1) {
+			const size = coverSizes[index];
+			const stitchIndex = index % stitchPointRatios.length;
+			const loopIndex = Math.floor(index / stitchPointRatios.length);
+			const stitchPoint = stitchPointRatios[stitchIndex];
+			const spreadPoint = {
+				x: clamp(0.5 + (stitchPoint.x - 0.5) * stitchPointSpread, 0.06, 0.94),
+				y: clamp(0.5 + (stitchPoint.y - 0.5) * stitchPointSpread, 0.06, 0.94)
+			};
+			const squareSpiralOffset = getSquareSpiralOffset(loopIndex);
+			const anchorX =
+				scenePadding +
+				spreadPoint.x * stitchCanvasWidth +
+				squareSpiralOffset.x * overflowSquareStep;
+			const anchorY =
+				scenePadding +
+				spreadPoint.y * stitchCanvasHeight +
+				squareSpiralOffset.y * overflowSquareStep;
+			const x = anchorX - size.width / 2;
+			const y = anchorY - size.height / 2;
 
-		rows.forEach((row, rowIndex) => {
-			const itemGaps = row.map((_, itemIndex) => {
-				if (itemIndex === row.length - 1) return 0;
-				const randomGap = coverSeparation * (1 + randomBetween(-gapRandomness, gapRandomness));
-				return Math.max(minCoverGap, randomGap);
-			});
-			const rowWidth =
-				row.reduce((sum, itemIndex) => sum + coverSizes[itemIndex].width, 0) +
-				itemGaps.reduce((sum, gap) => sum + gap, 0);
-			const rowOffset = randomBetween(-coverSeparation * 0.25, coverSeparation * 0.25);
-			let xCursor = clamp((sceneWidth - rowWidth) / 2 + rowOffset, minX, maxX - rowWidth);
+			placements[index] = {
+				x,
+				y,
+				width: size.width,
+				height: size.height,
+				rotate: stitchRotations[index % stitchRotations.length]
+			};
+			minXUsed = Math.min(minXUsed, x);
+			minYUsed = Math.min(minYUsed, y);
+			maxXUsed = Math.max(maxXUsed, x + size.width);
+			maxYUsed = Math.max(maxYUsed, y + size.height);
+		}
 
-			row.forEach((itemIndex, itemPos) => {
-				const size = coverSizes[itemIndex];
-				const y = yCursor + (rowHeights[rowIndex] - size.height) / 2;
-				placements[itemIndex] = {
-					x: clamp(xCursor, minX, maxX - size.width),
-					y: clamp(y, minY, maxY - size.height),
-					width: size.width,
-					height: size.height,
-					rotate: randomBetween(coverRotationMin, coverRotationMax)
-				};
-				xCursor += size.width + itemGaps[itemPos];
-			});
+		const rawWidth = maxXUsed - minXUsed;
+		const rawHeight = maxYUsed - minYUsed;
+		const usedWidth = Math.max(sceneWidth * 1.45, rawWidth + scenePadding * 2);
+		const usedHeight = Math.max(sceneHeight * 1.45, rawHeight + scenePadding * 2);
+		const cloudCenterX = (minXUsed + maxXUsed) / 2;
+		const cloudCenterY = (minYUsed + maxYUsed) / 2;
+		const shiftX = usedWidth / 2 - cloudCenterX;
+		const shiftY = usedHeight / 2 - cloudCenterY;
+		const centeredPlacements = placements.map((placement) => ({
+			...placement,
+			x: placement.x + shiftX,
+			y: placement.y + shiftY
+		}));
 
-			yCursor += rowHeights[rowIndex] + rowGaps[rowIndex];
-		});
-
-		return placements;
+		return {
+			placements: centeredPlacements,
+			usedWidth,
+			usedHeight
+		};
 	}
 
 	function buildConnectionLinePool(): ConnectionLine[] {
@@ -246,16 +335,140 @@
 			await waitForCoverImages();
 			if (!host) return;
 			const rect = host.getBoundingClientRect();
-			viewport = { width: rect.width, height: rect.height };
 			const sizes = getCoverSizes();
-			placements = createPlacements(rect.width, rect.height, sizes);
+			const {
+				placements: computed,
+				usedWidth,
+				usedHeight
+			} = createPlacements(rect.width, rect.height, sizes);
+			placements = computed;
+			viewport = {
+				width: Math.max(rect.width, usedWidth),
+				height: Math.max(rect.height, usedHeight)
+			};
 		} else {
 			const rect = host.getBoundingClientRect();
 			viewport = { width: rect.width, height: rect.height };
 			placements = [];
 		}
+		setCameraTarget(getCameraHomeTarget(), true);
 
 		mobileRotations = editions.map(() => randomBetween(mobileRotationMin, mobileRotationMax));
+	}
+
+	function getCameraBounds() {
+		if (!host) return null;
+		const hostRect = host.getBoundingClientRect();
+		return {
+			minX: Math.min(0, hostRect.width - viewport.width),
+			maxX: 0,
+			minY: Math.min(0, hostRect.height - viewport.height),
+			maxY: 0,
+			hostWidth: hostRect.width,
+			hostHeight: hostRect.height
+		};
+	}
+
+	function clampCameraOffset(offset: Point): Point {
+		const bounds = getCameraBounds();
+		if (!bounds) return offset;
+		return {
+			x: clamp(offset.x, bounds.minX, bounds.maxX),
+			y: clamp(offset.y, bounds.minY, bounds.maxY)
+		};
+	}
+
+	function getCameraHomeTarget() {
+		const bounds = getCameraBounds();
+		if (!bounds) return { x: 0, y: 0 };
+		return {
+			x: (bounds.hostWidth - viewport.width) / 2,
+			y: (bounds.hostHeight - viewport.height) / 2
+		};
+	}
+
+	function getCameraOffsetFromCenter() {
+		const home = getCameraHomeTarget();
+		return {
+			x: cameraOffset.x - home.x,
+			y: cameraOffset.y - home.y
+		};
+	}
+
+	function getSubtleSkew(index: number): Point {
+		const bounds = getCameraBounds();
+		if (!bounds) return { x: 0, y: 0 };
+
+		const centeredOffset = getCameraOffsetFromCenter();
+		const maxTravelX = Math.max(1, (viewport.width - bounds.hostWidth) / 2);
+		const maxTravelY = Math.max(1, (viewport.height - bounds.hostHeight) / 2);
+		const cameraRatioX = clamp(centeredOffset.x / maxTravelX, -1, 1);
+		const cameraRatioY = clamp(centeredOffset.y / maxTravelY, -1, 1);
+		const indexBiasX = ((index % 7) - 3) * 0.05;
+		const indexBiasY = ((Math.floor(index / 2) % 7) - 3) * 0.04;
+
+		return {
+			x: clamp(cameraRatioX * 0.35 + indexBiasX, -0.6, 0.6),
+			y: clamp(cameraRatioY * 0.3 + indexBiasY, -0.6, 0.6)
+		};
+	}
+
+	function runCameraAnimation() {
+		if (typeof window === 'undefined') return;
+		if (cameraAnimationFrame !== null) return;
+
+		const step = () => {
+			const dx = cameraTarget.x - cameraOffset.x;
+			const dy = cameraTarget.y - cameraOffset.y;
+
+			if (Math.abs(dx) <= cameraSnapThreshold && Math.abs(dy) <= cameraSnapThreshold) {
+				cameraOffset = cameraTarget;
+				cameraAnimationFrame = null;
+				scheduleConnectionLinesRefresh();
+				return;
+			}
+
+			cameraOffset = clampCameraOffset({
+				x: cameraOffset.x + dx * cameraEase,
+				y: cameraOffset.y + dy * cameraEase
+			});
+			scheduleConnectionLinesRefresh();
+			cameraAnimationFrame = window.requestAnimationFrame(step);
+		};
+
+		cameraAnimationFrame = window.requestAnimationFrame(step);
+	}
+
+	function setCameraTarget(target: Point, immediate = false) {
+		const clampedTarget = clampCameraOffset(target);
+		cameraTarget = clampedTarget;
+		if (immediate) {
+			cameraOffset = clampedTarget;
+			scheduleConnectionLinesRefresh();
+			return;
+		}
+		runCameraAnimation();
+	}
+
+	function updateCameraTargetFromInput() {
+		const bounds = getCameraBounds();
+		if (!bounds) return;
+		if (!pointer.active) {
+			setCameraTarget(getCameraHomeTarget());
+			return;
+		}
+
+		const normalizedX = bounds.hostWidth > 0 ? pointer.x / bounds.hostWidth - 0.5 : 0;
+		const normalizedY = bounds.hostHeight > 0 ? pointer.y / bounds.hostHeight - 0.5 : 0;
+		const maxTravelX = Math.max(0, (viewport.width - bounds.hostWidth) / 2);
+		const maxTravelY = Math.max(0, (viewport.height - bounds.hostHeight) / 2);
+		const home = getCameraHomeTarget();
+		const target: Point = {
+			x: home.x - normalizedX * 2 * maxTravelX * cameraDragStrength,
+			y: home.y - normalizedY * 2 * maxTravelY * cameraDragStrength
+		};
+
+		setCameraTarget(target);
 	}
 
 	function getCoverRectInHost(coverKey: string): DOMRect | null {
@@ -274,6 +487,9 @@
 
 	function getPointerTranslationForPlacement(coverKey: string, placement: Placement): Point {
 		if (!pointer.active) return { x: 0, y: 0 };
+		if (typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches) {
+			return { x: 0, y: 0 };
+		}
 
 		const coverRect = getCoverRectInHost(coverKey);
 		const left = coverRect?.x ?? placement.x;
@@ -317,6 +533,9 @@
 			y: clamp(e.clientY - rect.top, 0, rect.height),
 			active: true
 		};
+		if (window.matchMedia('(min-width: 768px)').matches) {
+			updateCameraTargetFromInput();
+		}
 		scheduleConnectionLinesRefresh();
 	}
 
@@ -329,6 +548,11 @@
 		hoveredIndex = null;
 		hoveredCoverKey = null;
 		hoveredEditionName = null;
+		if (typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches) {
+			updateCameraTargetFromInput();
+		} else {
+			setCameraTarget({ x: 0, y: 0 }, true);
+		}
 		areConnectionLinesVisible = false;
 		connectionLines = connectionLines.map((line) =>
 			line.active
@@ -344,6 +568,9 @@
 		hoveredIndex = coverIndex;
 		hoveredCoverKey = coverKey;
 		hoveredEditionName = edition.name;
+		if (window.matchMedia('(min-width: 768px)').matches) {
+			updateCameraTargetFromInput();
+		}
 		currentEdition.set(edition);
 		refreshConnectionLines();
 		isTitleShowing.set(true);
@@ -356,6 +583,9 @@
 		if (hoveredCoverKey === coverKey) {
 			hoveredCoverKey = null;
 			hoveredEditionName = null;
+			if (pointer.active && window.matchMedia('(min-width: 768px)').matches) {
+				updateCameraTargetFromInput();
+			}
 			areConnectionLinesVisible = false;
 			connectionLines = connectionLines.map((line) =>
 				line.active
@@ -384,15 +614,13 @@
 		if (!placement || !cover) return null;
 
 		const translation = getPointerTranslationForPlacement(cover.key, placement);
+		const skew = getSubtleSkew(index);
 		const isHovered = hoveredIndex === index;
 		const zIndex = isHovered ? 50 : 10 + (index % 12);
 		let opacity = 1;
-		let outline = 'none';
 		if (hoveredEditionName) {
 			if (cover.edition.name !== hoveredEditionName) {
 				opacity = dimmedCoverOpacity;
-			} else {
-				outline = 'solid white 10px';
 			}
 		}
 
@@ -401,26 +629,29 @@
 			y: placement.y,
 			tx: translation.x,
 			ty: translation.y,
+			skewX: skew.x,
+			skewY: skew.y,
 			width: placement.width,
 			zIndex,
 			rotate: placement.rotate,
-			opacity,
-			outline
+			opacity
 		};
 	}
 
 	function getCoverCentersForKeys(coverKeys: string[]): Map<string, Point> {
 		const centers = new Map<string, Point>();
-		if (!host) return centers;
-		const hostRect = host.getBoundingClientRect();
+		if (placements.length === 0) return centers;
+		const indexByCoverKey = new Map(canvasCovers.map((cover, index) => [cover.key, index]));
 
 		coverKeys.forEach((coverKey) => {
-			const coverElement = coverElements.get(coverKey);
-			if (!coverElement) return;
-			const coverRect = coverElement.getBoundingClientRect();
+			const coverIndex = indexByCoverKey.get(coverKey);
+			if (coverIndex === undefined) return;
+			const placement = placements[coverIndex];
+			if (!placement) return;
+			const translation = getPointerTranslationForPlacement(coverKey, placement);
 			centers.set(coverKey, {
-				x: coverRect.left - hostRect.left + coverRect.width / 2,
-				y: coverRect.top - hostRect.top + coverRect.height / 2
+				x: placement.x + placement.width / 2 + translation.x,
+				y: placement.y + placement.height / 2 + translation.y
 			});
 		});
 
@@ -513,6 +744,9 @@
 			if (connectionRefreshFrame !== null) {
 				window.cancelAnimationFrame(connectionRefreshFrame);
 			}
+			if (cameraAnimationFrame !== null) {
+				window.cancelAnimationFrame(cameraAnimationFrame);
+			}
 			resetMouse();
 		};
 	});
@@ -537,73 +771,129 @@
 	class:opacity-0={!isReady}
 	class:pointer-events-none={!isReady}
 >
-	{#if connectionLines.length > 0}
-		<svg
-			class="pointer-events-none absolute inset-0 z-[-5] hidden h-full w-full md:block"
-			width={viewport.width}
-			height={viewport.height}
-			aria-hidden="true"
-		>
-			{#each connectionLines as line (line.key)}
-				{#if areConnectionLinesVisible && line.active}
-					<line
-						x1={line.start.x}
-						y1={line.start.y}
-						x2={line.end.x}
-						y2={line.end.y}
-						stroke="white"
-						stroke-width="10"
-						stroke-linecap="round"
-						transition:draw={{ duration: 1200, easing: cubicInOut }}
-					/>
-				{/if}
-			{/each}
-		</svg>
-	{/if}
-	{#each canvasCovers as cover, index (cover.key)}
-		{@const placementStyle = getPlacementCoords(index)}
-		<button
-			type="button"
-			data-hover="Open this book"
-			use:registerCoverElement={cover.key}
-			onclick={() => openPanel(cover.edition)}
-			onpointerenter={() => handleCoverPointerEnter(index, cover.key, cover.edition)}
-			onpointerleave={() => handleCoverPointerLeave(index, cover.key)}
-			class="canvas-cover absolute hidden h-[300px] w-fit origin-center cursor-pointer overflow-clip rounded-md bg-white opacity-0 transition-[opacity,box-shadow,transform] duration-250 ease-out hover:shadow-[0_12px_30px_rgba(15,23,42,0.16)] focus-visible:opacity-100! md:block"
-			style="left: {placementStyle ? placementStyle.x : 0}px; top: {placementStyle
-				? placementStyle.y
-				: 0}px; transform: translate({placementStyle ? placementStyle.tx : 0}px, {placementStyle
-				? placementStyle.ty
-				: 0}px) rotate({placementStyle ? placementStyle.rotate : 0}deg); opacity: {placementStyle
-				? placementStyle.opacity
-				: 0}; outline: {placementStyle ? placementStyle.outline : 'none'};"
-			aria-label={cover.edition.name}
-		>
-			<img
-				src={cover.element}
-				alt={cover.edition.name}
-				class="block h-full w-auto max-w-none overflow-clip bg-white object-contain"
-				loading="eager"
-				fetchpriority="high"
-				decoding="async"
-			/>
-		</button>
-	{/each}
+	<div
+		class="absolute top-0 left-0 z-0 hidden will-change-transform md:block"
+		style="width: {viewport.width}px; height: {viewport.height}px; transform: translate3d({cameraOffset.x}px, {cameraOffset.y}px, 0);"
+	>
+		{#if connectionLines.length > 0}
+			<svg
+				class="pointer-events-none absolute inset-0 z-[-5] h-full w-full"
+				width={viewport.width}
+				height={viewport.height}
+				aria-hidden="true"
+			>
+				{#each connectionLines as line (line.key)}
+					{#if areConnectionLinesVisible && line.active}
+						<line
+							x1={line.start.x}
+							y1={line.start.y}
+							x2={line.end.x}
+							y2={line.end.y}
+							stroke="white"
+							stroke-width="10"
+							stroke-linecap="round"
+							transition:draw={{ duration: 1200, easing: cubicInOut }}
+						/>
+					{/if}
+				{/each}
+			</svg>
+		{/if}
+		{#each canvasCovers as cover, index (cover.key)}
+			{@const placementStyle = getPlacementCoords(index)}
+			<button
+				type="button"
+				data-hover={cover.key.replace(' ', '').split('/').pop()}
+				use:registerCoverElement={cover.key}
+				onclick={() => openPanel(cover.edition)}
+				onpointerenter={() => handleCoverPointerEnter(index, cover.key, cover.edition)}
+				onpointerleave={() => handleCoverPointerLeave(index, cover.key)}
+				class="canvas-cover transition-[opacity,drop-shadow,transform, scale] absolute h-75 w-fit origin-center cursor-pointer overflow-clip rounded-md opacity-0 duration-250 ease-out hover:scale-105 hover:drop-shadow-sm focus-visible:opacity-100!"
+				style="left: {placementStyle ? placementStyle.x : 0}px; top: {placementStyle
+					? placementStyle.y
+					: 0}px; transform: translate({placementStyle ? placementStyle.tx : 0}px, {placementStyle
+					? placementStyle.ty
+					: 0}px) rotate({placementStyle ? placementStyle.rotate : 0}deg) skewX({placementStyle
+					? placementStyle.skewX
+					: 0}deg) skewY({placementStyle ? placementStyle.skewY : 0}deg); opacity: {placementStyle
+					? placementStyle.opacity
+					: 0};"
+				aria-label={cover.edition.name}
+			>
+				<img
+					src={cover.element}
+					alt={cover.edition.name}
+					class="block h-full w-auto max-w-none overflow-clip object-contain"
+					loading="eager"
+					fetchpriority="high"
+					decoding="async"
+				/>
+			</button>
+		{/each}
+	</div>
 	{#each editions as edition, index}
 		{@const editionElements = getEditionElements(edition.name)}
 		<!-- mobile version -->
 		<button
-			class="block h-auto w-[80%] rounded-md bg-white/90 shadow-[0_12px_30px_rgba(15,23,42,0.16)] md:hidden"
+			class="block h-auto w-[80%] rounded-md bg-white/90 drop-shadow-sm md:hidden"
 			type="button"
 			aria-label={edition.name}
 			onclick={() => openPanel(edition)}
 			style={`transform: rotate(${mobileRotations[index] ?? 0}deg);`}
 		>
 			<img
-				src={editionElements.find((e) => e.includes('thumb')) ?? editionElements[0]}
+				src={editionElements.find((e) => e.includes('cover')) ?? editionElements[0]}
 				alt={edition.name}
 				class="h-auto w-full object-contain"
 			/>
 		</button>
 	{/each}
+	{#if $isTitleShowing}
+		<div class="pointer-events-none absolute z-10 flex h-dvh w-screen items-center justify-center">
+			<h1
+				in:fly={{ y: 50, duration: 300, easing: cubicInOut, delay: 200 }}
+				out:fly={{ y: 50, duration: 300, easing: cubicInOut, delay: 0 }}
+				class="bg-neutral-100 p-2 text-6xl"
+			>
+				{$currentEdition?.name}
+			</h1>
+		</div>
+	{/if}
+	<main
+		class="fixed z-[-10] flex h-dvh w-dvw items-center justify-center md:pointer-events-none"
+		id="about_text"
+		style="transform: translate3d({getCameraOffsetFromCenter().x}px, {getCameraOffsetFromCenter()
+			.y}px, 0);"
+	></main>
 </section>
+<Gradient></Gradient>
+
+<!-- <main
+	class="fixed z-[-10] flex h-dvh w-dvw items-center justify-center md:pointer-events-none"
+	id="about_text"
+	style="transform: translate3d({getCameraOffsetFromCenter().x}px, {getCameraOffsetFromCenter()
+		.y}px, 0);"
+>
+	{#if !$isTitleShowing}
+		<div
+			class="flex h-full w-full flex-col items-center justify-start overflow-scroll bg-neutral-100 p-4 py-30 md:h-fit md:w-4/5 md:justify-center md:overflow-hidden md:py-0"
+		>
+			<h1
+				class="text-neutral-300"
+				in:fly={{ y: 50, duration: 300, easing: cubicInOut, delay: 0 }}
+				out:fly={{ y: 50, duration: 300, easing: cubicInOut, delay: 200 }}
+			>
+				éditions annexes est un projet éditorial qui publie des résultats de recherche en dehors des
+				circuits classiques de l’édition scientifique. Il ne prétend pas s’y substituer, mais
+				propose de la compléter, en élargissant l’éventail des formats éditoriaux grâce auxquels une
+				recherche peut se partager : modes d’emploi, exercices, protocoles, zine, matériau empirique
+				brut, poster, etc. éditions annexes propose en retour de s’interroger sur le rôle des
+				formats dans l’édition scientifique. L’idée directrice du projet est d’inverser le rapport
+				d’importance entre le texte d’une publication et son péritexte (notes de bas de page,
+				illustrations et figures, annexes), grâce à un travail d’édition et de design graphique
+				adapté à chaque objet. Enfin, ce mode de publication est rapide, peu onéreux et entièrement
+				autogéré, permettant ainsi de fabriquer des comptes rendus d’une recherche vivante, en train
+				de se faire.
+			</h1>
+		</div>
+	{/if}
+</main>-->

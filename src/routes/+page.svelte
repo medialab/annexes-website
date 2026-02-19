@@ -23,7 +23,3 @@
 	<meta name="twitter:description" content={pageDescription} />
 	<meta name="twitter:image" content={socialImageUrl} />
 </svelte:head>
-
-<Header></Header>
-
-<Footer></Footer>

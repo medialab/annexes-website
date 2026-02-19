@@ -230,7 +230,7 @@ function clearGeneratedPages(targetDir) {
 
 	const files = fs.readdirSync(targetDir);
 	files.forEach((file) => {
-		if (/^page-\d+\.jpg$/i.test(file) || file.toLowerCase() === 'thumb.jpg') {
+		if (/^page-\d+\.jpg$/i.test(file) || file.toLowerCase() === 'cover.jpg') {
 			fs.rmSync(path.join(targetDir, file), { force: true });
 		}
 	});
@@ -283,7 +283,7 @@ function ensureThumbFromFirstPage(slug) {
 	const firstPage = getFirstGeneratedPagePath(pagesDir);
 	if (!firstPage) return false;
 
-	const thumb = path.join(canvasElementsDir, 'thumb.jpg');
+	const thumb = path.join(canvasElementsDir, 'cover.jpg');
 	fs.copyFileSync(firstPage, thumb);
 	console.log(`Created thumb: ${thumb}`);
 	return true;
@@ -379,7 +379,7 @@ function hasGeneratedPages(slug) {
 
 function hasThumb(slug) {
 	const { canvasElementsDir } = getEditionAssetDirs(slug);
-	return fs.existsSync(path.join(canvasElementsDir, 'thumb.jpg'));
+	return fs.existsSync(path.join(canvasElementsDir, 'cover.jpg'));
 }
 
 function getPdfFilesRecursive(rootDir, currentDir = rootDir) {

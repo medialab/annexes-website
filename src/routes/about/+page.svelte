@@ -3,6 +3,9 @@
 	import Footer from '$lib/components/footer.svelte';
 	import { page } from '$app/state';
 	import { asset } from '$app/paths';
+	import { cubicInOut } from 'svelte/easing';
+	import { fly } from 'svelte/transition';
+	import { isTitleShowing } from '$lib/stores';
 
 	const pageTitle = 'About | editions annexes';
 	const pageDescription =
@@ -24,13 +27,18 @@
 	<meta name="twitter:image" content={socialImageUrl} />
 </svelte:head>
 
-<Header></Header>
-<Footer></Footer>
-<main class="absolute z-5 flex h-dvh w-dvw items-center justify-center md:pointer-events-none">
+<main
+	class="fixed z-[-10] flex h-dvh w-dvw items-center justify-center md:pointer-events-none"
+	id="about_text"
+>
 	<div
-		class="flex h-dvh w-full flex-col items-center justify-start overflow-scroll bg-neutral-100 p-4 py-30 md:h-fit md:w-4/5 md:justify-center md:overflow-hidden md:py-0"
+		class="flex h-full w-full flex-col items-center justify-start overflow-scroll bg-neutral-100 p-4 py-30 md:h-fit md:w-4/5 md:justify-center md:overflow-hidden md:py-0"
 	>
-		<h1 class=" text-neutral-400">
+		<h1
+			class="text-neutral-300"
+			in:fly={{ y: 50, duration: 300, easing: cubicInOut, delay: 0 }}
+			out:fly={{ y: 50, duration: 300, easing: cubicInOut, delay: 200 }}
+		>
 			éditions annexes est un projet éditorial qui publie des résultats de recherche en dehors des
 			circuits classiques de l’édition scientifique. Il ne prétend pas s’y substituer, mais propose
 			de la compléter, en élargissant l’éventail des formats éditoriaux grâce auxquels une recherche
