@@ -2,48 +2,48 @@
 
 [![Build And Deploy (With PDF Sync)](https://github.com/medialab/editions-annexes/actions/workflows/deploy.yml/badge.svg)](https://github.com/medialab/editions-annexes/actions/workflows/deploy.yml)
 
-Site web des éditions annexes — projet éditorial du medialab Sciences Po.
+Website for éditions annexes — a publishing project at Sciences Po medialab.
 
-## Ajouter une publication
+## How to Add a Publication
 
-1. **Déposer le PDF** dans le dossier `static/pdfs/`
-2. **Pousser sur `main`** — la CI détecte le nouveau fichier, génère les pages et vignettes, crée l'entrée dans la base de données, et déploie le site automatiquement
+1. **Place the PDF** in the `static/pdfs/` folder
+2. **Push to `main`** — the CI pipeline detects the new file, generates page JPEGs and a cover thumbnail, creates a database entry, and deploys the site automatically
 
-> Le titre, les auteurs·rices, la date et les mots-clés sont automatiquement extraits des métadonnées du PDF (XMP). Si le PDF n'a pas de métadonnées, le nom du fichier sert de titre.
+> Title, authors, date, and keywords are automatically extracted from PDF metadata (XMP). If the PDF lacks metadata, the filename is used as the title.
 
-### Via l'interface GitHub
+### Via the GitHub Web Interface
 
-1. Aller sur [github.com/medialab/editions-annexes](https://github.com/medialab/editions-annexes)
-2. Naviguer dans `static/pdfs/` → **Add file** → **Upload files**
-3. Glisser-déposer le PDF → **Commit changes** (sur `main`)
-4. Le déploiement démarre automatiquement. Vérifier le status dans l'onglet **Actions**
+1. Go to [github.com/medialab/editions-annexes](https://github.com/medialab/editions-annexes)
+2. Browse to `static/pdfs/` → **Add file** → **Upload files**
+3. Drag and drop the PDF → **Commit changes** (to `main`)
+4. Deployment starts automatically. Check progress in the **Actions** tab
 
-### Structure des assets générés
+### Generated Assets Structure
 
 ```
 src/lib/media/editions/{slug}/
-├── pages/              # JPEGs (une par page)
-├── canvasElements/     # Vignette de couverture
-└── images/             # Gallery (à ajouter manuellement si besoin)
+├── pages/              # JPEGs (one per page)
+├── canvasElements/     # Cover thumbnail
+└── images/             # Gallery images (add manually if needed)
 ```
 
-### Ajouter des images de gallery
+### Adding Gallery Images
 
-Après le déploiement automatique, placer les images dans `src/lib/media/editions/{slug}/images/` et pousser à nouveau.
+After automatic deployment, place images in `src/lib/media/editions/{slug}/images/` and push again.
 
-## Développement local
+## Local Development
 
 ```bash
 bun install
 bun run dev
 ```
 
-### Scripts utiles
+### Useful Scripts
 
-| Commande | But |
-|----------|-----|
-| `bun scripts/process-pdf.js` | Synchroniser les PDFs avec la base de données |
-| `bun test` | Tester le pipeline PDF |
-| `bun run build` | Build de production |
+| Command | Purpose |
+|---------|---------|
+| `bun scripts/process-pdf.js` | Sync PDFs with the database |
+| `bun test` | Test the PDF pipeline |
+| `bun run build` | Production build |
 
-Le site est automatiquement déployé sur GitHub Pages à chaque push sur `main`. Voir `.github/workflows/deploy.yml`.
+The site is automatically deployed to GitHub Pages on every push to `main`. See `.github/workflows/deploy.yml`.
