@@ -11,14 +11,14 @@
 	import readerIcon from '$lib/assets/icons/reader.svg';
 	import homeIcon from '$lib/assets/icons/homeIcon.svg';
 	import { hasValue, webShareApi } from '$lib/utils';
+	import { locale, translate } from '$lib/i18n';
 
-	const navItems: { panel: MenuVariations; icon: string; label: string }[] = [
-		{ panel: 'share', icon: shareIcon, label: 'Share' },
-		{ panel: 'book', icon: bookIcon, label: 'Book' },
-		{ panel: 'gallery', icon: galleryIcon, label: 'Gallery' },
-		{ panel: 'reader', icon: readerIcon, label: 'Reader' },
-
-		{ panel: 'home', icon: homeIcon, label: 'Home' }
+	const navItems: { panel: MenuVariations; icon: string; labelKey: string }[] = [
+		{ panel: 'share', icon: shareIcon, labelKey: 'nav.share' },
+		{ panel: 'book', icon: bookIcon, labelKey: 'nav.book' },
+		{ panel: 'gallery', icon: galleryIcon, labelKey: 'nav.gallery' },
+		{ panel: 'reader', icon: readerIcon, labelKey: 'nav.reader' },
+		{ panel: 'home', icon: homeIcon, labelKey: 'nav.home' }
 	];
 	const homeHref = resolve('/');
 
@@ -53,13 +53,13 @@
 			class:home-button={item.panel === 'home'}
 			class:share-button={item.panel === 'share'}
 			class:back={$currentPanel === 'home'}
-			aria-label={item.label}
-			title={item.label}
-			data-hover={item.label}
+			aria-label={translate($locale, item.labelKey)}
+			title={translate($locale, item.labelKey)}
+			data-hover={translate($locale, item.labelKey)}
 		>
 			<img
 				src={item.icon}
-				alt={item.label}
+				alt={translate($locale, item.labelKey)}
 				class="h-full w-auto opacity-85 mix-blend-darken"
 				class:active={$currentPanel === item.panel}
 			/>
@@ -67,7 +67,7 @@
 				<p
 					class="block place-self-center align-middle font-medium text-[#005792] hover:no-underline md:hidden"
 				>
-					{item.label}
+					{translate($locale, item.labelKey)}
 				</p>
 			{/if}
 		</button>

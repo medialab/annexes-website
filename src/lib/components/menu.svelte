@@ -18,6 +18,7 @@
 	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
+	import { locale, translate } from '$lib/i18n';
 
 	let { currentEdition } = $props();
 
@@ -56,13 +57,13 @@
 			<header class="hidden h-fit w-full items-center justify-between md:flex">
 				{#if currentEdition && hasValue(currentEdition.parentUrl)}
 					<Button
-						label={`Visit the original project page`}
+						label={translate($locale, 'panel.visitProjectPage')}
 						icon={externalLinkIcon}
 						url={currentEdition.parentUrl}
 					></Button>
 				{/if}
 				<Button
-					label="Close"
+					label={translate($locale, 'panel.close')}
 					icon={closeIcon}
 					urgency="urgent"
 					onClick={() => {
@@ -106,7 +107,7 @@
 			<footer class="hidden h-fit w-full items-center justify-between md:flex">
 				{#if downloadInfo.href}
 					<Button
-						label="Download"
+						label={translate($locale, 'panel.download')}
 						icon={downloadIcon}
 						url={downloadInfo.href}
 						download={downloadInfo.filename}
@@ -115,7 +116,7 @@
 
 				{#if hasValue(currentEdition?.name) && showShareButton}
 					<Button
-						label="Share"
+						label={translate($locale, 'panel.share')}
 						icon={shareIcon}
 						onClick={() =>
 							webShareApi(currentEdition.name, page.url.href, currentEdition?.parentProject)}

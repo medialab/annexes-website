@@ -1,0 +1,49 @@
+{
+	"nav.book": "Notice",
+	"nav.gallery": "Galerie",
+	"nav.reader": "Lecture",
+	"nav.home": "Accueil",
+	"nav.share": "Partager",
+
+	"panel.close": "Fermer",
+	"panel.download": "Télécharger",
+	"panel.share": "Partager",
+	"panel.visitProjectPage": "Voir la page du projet original",
+
+	"bio.title": "titre",
+	"bio.isbn": "isbn",
+	"bio.published": "publié le",
+	"bio.coPublisher": "co-éditeur",
+	"bio.download": "téléchargement",
+	"bio.editors": "éditeur·ices",
+	"bio.designBy": "design par",
+	"bio.contributors": "contributeur·ices",
+	"bio.topic": "sujet",
+	"bio.partOf": "fait partie de",
+	"bio.annexOf": "Annexe de {project}",
+
+	"page.loading": "Chargement...",
+	"page.loadingPages": "Chargement des pages...",
+	"page.loadingGallery": "Chargement de la galerie...",
+	"page.notFound": "Édition introuvable",
+	"page.missingData": "données manquantes",
+	"page.noPages": "Aucune page trouvée.",
+	"page.noImages": "Aucune image trouvée dans la galerie.",
+	"page.errorLoading": "Erreur de chargement de la galerie.",
+	"page.errorLoadingPages": "Impossible de charger les pages.",
+
+	"reader.previousPage": "Page précédente",
+	"reader.nextPage": "Page suivante",
+
+	"gallery.previousImage": "Image précédente",
+	"gallery.nextImage": "Image suivante",
+
+	"canvas.title": "éditions annexes",
+	"canvas.description": "éditions annexes est un projet éditorial qui publie des résultats de recherche en dehors des circuits classiques de l'édition scientifique.",
+
+	"home.description": "éditions annexes est un projet éditorial qui publie des résultats de recherche en dehors des circuits classiques de l'édition scientifique. Il ne prétend pas s'y substituer, mais propose de la compléter, en élargissant l'éventail des formats éditoriaux grâce auxquels une recherche peut se partager : modes d'emploi, exercices, protocoles, zine, matériau empirique brut, poster, etc. éditions annexes propose en retour de s'interroger sur le rôle des formats dans l'édition scientifique. L'idée directrice du projet est d'inverser le rapport d'importance entre le texte d'une publication et son péritexte (notes de bas de page, illustrations et figures, annexes), grâce à un travail d'édition et de design graphique adapté à chaque objet. Enfin, ce mode de publication est rapide, peu onéreux et entièrement autogéré, permettant ainsi de fabriquer des comptes rendus d'une recherche vivante, en train de se faire.",
+	"home.collaboration": "Nous sommes toujours à la recherche de nouvelles collaborations expérimentales. {link} si vous souhaitez publier avec nous",
+	"home.dropMessage": "Laissez-nous un message",
+	"home.copyEmail": "Cliquez pour recevoir nos emails !",
+	"home.emailCopied": "copié ✓"
+}

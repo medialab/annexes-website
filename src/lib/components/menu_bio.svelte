@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { locale, translate } from '$lib/i18n';
 	let { currentEdition, gridCols } = $props();
 	import {
 		getEditionDownloadInfo,
@@ -51,7 +52,7 @@
 							<h1>{currentEdition.name}</h1>
 						{/if}
 						{#if hasValue(currentEdition.parentProject)}
-							<p>Annex of {currentEdition.parentProject}</p>
+							<p>{translate($locale, 'bio.annexOf', { project: currentEdition.parentProject })}</p>
 						{/if}
 					</div>
 				{/if}
@@ -60,32 +61,32 @@
 				{/if}
 				<div class="flex-col gap-2 md:flex">
 					{#if hasValue(currentEdition.name)}
-						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-neutral-400 uppercase">title</p>
+				<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
+							<p class="col-span-1 text-neutral-400 uppercase">{translate($locale, 'bio.title')}</p>
 							<p class="col-span-1">{currentEdition.name}</p>
 						</div>
 					{/if}
 					{#if hasValue(currentEdition.isbn)}
 						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-neutral-400 uppercase">isbn</p>
+							<p class="col-span-1 text-neutral-400 uppercase">{translate($locale, 'bio.isbn')}</p>
 							<p class="col-span-1">{currentEdition.isbn}</p>
 						</div>
 					{/if}
 					{#if hasValue(currentEdition.publishingDate)}
 						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-neutral-400 uppercase">published</p>
+							<p class="col-span-1 text-neutral-400 uppercase">{translate($locale, 'bio.published')}</p>
 							<p class="col-span-1">{currentEdition.publishingDate}</p>
 						</div>
 					{/if}
 					{#if hasValue(currentEdition.coPublisher)}
 						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-neutral-400 uppercase">co-publisher</p>
+							<p class="col-span-1 text-neutral-400 uppercase">{translate($locale, 'bio.coPublisher')}</p>
 							<p class="col-span-1">{currentEdition.coPublisher}</p>
 						</div>
 					{/if}
 					{#if downloadInfo.href}
 						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-neutral-400 uppercase">download</p>
+							<p class="col-span-1 text-neutral-400 uppercase">{translate($locale, 'bio.download')}</p>
 							<a href={downloadInfo.href} download={downloadInfo.filename}>
 								<p class="col-span-1 hover:underline hover:underline-offset-2">
 									{downloadInfo.filename ?? currentEdition.downloadHref}
@@ -95,31 +96,31 @@
 					{/if}
 					{#if hasValue(editorsText)}
 						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-neutral-400 uppercase">editors</p>
+							<p class="col-span-1 text-neutral-400 uppercase">{translate($locale, 'bio.editors')}</p>
 							<p class="col-span-1">{editorsText}</p>
 						</div>
 					{/if}
 					{#if hasValue(designersText)}
 						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-neutral-400 uppercase">design by</p>
+							<p class="col-span-1 text-neutral-400 uppercase">{translate($locale, 'bio.designBy')}</p>
 							<p class="col-span-1">{designersText}</p>
 						</div>
 					{/if}
 					{#if hasValue(contributorsText)}
 						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-neutral-400 uppercase">contributors</p>
+							<p class="col-span-1 text-neutral-400 uppercase">{translate($locale, 'bio.contributors')}</p>
 							<p class="col-span-1">{contributorsText}</p>
 						</div>
 					{/if}
 					{#if hasValue(keywordsText)}
 						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-neutral-400 uppercase">topic</p>
+							<p class="col-span-1 text-neutral-400 uppercase">{translate($locale, 'bio.topic')}</p>
 							<p class="col-span-1">{keywordsText}</p>
 						</div>
 					{/if}
 					{#if hasValue(currentEdition.parentProject)}
 						<div class="grid grid-cols-[0.5fr_1fr] gap-2 md:grid-cols-[0.3fr_1fr]">
-							<p class="col-span-1 text-neutral-400 uppercase">part of</p>
+							<p class="col-span-1 text-neutral-400 uppercase">{translate($locale, 'bio.partOf')}</p>
 							{#if currentEdition.parentUrl}
 								<a
 									href={isExternalHref(currentEdition.parentUrl)

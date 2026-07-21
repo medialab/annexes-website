@@ -1,12 +1,9 @@
-<script>
-	import Button from './button.svelte';
-	import infoIcon from '$lib/assets/icons/info.svg';
-	import homeIcon from '$lib/assets/icons/homeIcon.svg';
+<script lang="ts">
 	import annexesIcon from '$lib/assets/icons/annexes.png';
 	import { resolve } from '$app/paths';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
 	import { homeHref } from '$lib/stores';
+	import { locale } from '$lib/i18n';
 </script>
 
 <header
@@ -19,4 +16,18 @@
 	>
 		<img src={annexesIcon} alt="annexes logo" class="h-7.5 w-auto" />
 	</a>
+	<div class="flex gap-1">
+		<button
+			type="button"
+			class="text-xs px-2 py-1 rounded-lg {$locale === 'en' ? 'bg-neutral-200 font-medium' : 'text-neutral-400'}"
+			onclick={() => $locale = 'en'}
+			aria-label="Switch to English"
+		>EN</button>
+		<button
+			type="button"
+			class="text-xs px-2 py-1 rounded-lg {$locale === 'fr' ? 'bg-neutral-200 font-medium' : 'text-neutral-400'}"
+			onclick={() => $locale = 'fr'}
+			aria-label="Passer en français"
+		>FR</button>
+	</div>
 </header>
