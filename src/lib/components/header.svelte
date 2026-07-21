@@ -6,17 +6,15 @@
 	import { locale } from '$lib/i18n';
 </script>
 
-<header
-	class="fixed top-6 right-4 left-4 z-30 flex h-12.5 items-center justify-between rounded-2xl bg-white p-2 md:right-auto md:left-1/2 md:w-full md:max-w-[60%] md:-translate-x-1/2"
->
+<header class="fixed top-2 left-4 right-4 z-30 flex items-start justify-between">
 	<a
 		href={homeHref}
 		onclick={() => goto(homeHref)}
-		class="flex h-full flex-col items-center justify-center overflow-clip"
+		class="flex h-fit items-center justify-center rounded-2xl bg-white px-2 py-1"
 	>
 		<img src={annexesIcon} alt="annexes logo" class="h-7.5 w-auto" />
 	</a>
-	<div class="flex gap-1">
+	<div class="flex h-fit items-center gap-1 rounded-2xl bg-white px-2 py-2">
 		<button
 			type="button"
 			class="text-xs px-2 py-1 rounded-lg {$locale === 'en' ? 'bg-neutral-200 font-medium' : 'text-neutral-400'}"

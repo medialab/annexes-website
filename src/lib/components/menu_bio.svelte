@@ -152,7 +152,7 @@
 	</div>
 	<div class="h-fit w-full md:h-full md:w-1/2" id="timone">
 		<div
-			class="group grid h-full gap-2 overflow-y-scroll p-0 pb-8 transition-opacity duration-300 md:h-full md:p-4 md:pb-0"
+			class="group grid min-h-full max-h-full gap-2 overflow-y-auto p-0 pb-8 transition-opacity duration-300 md:p-4 md:pb-0"
 			style={`grid-template-columns: repeat(${gridCols}, minmax(0, 1fr));`}
 		>
 			{#await pagesPromise}

@@ -7,7 +7,7 @@
 	import { allEditions, restCursorText, copyText, currentEdition } from '$lib/stores';
 	import Canvas from '$lib/components/canvas.svelte';
 	import { onMount } from 'svelte';
-	import { fade } from 'svelte/transition';
+	import { fade, slide } from 'svelte/transition';
 	import { cubicInOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';
 	import { goto } from '$app/navigation';
@@ -77,7 +77,7 @@
 			{@const brand = `<span class="brand-link cursor-pointer text-neutral-500" role="button" tabindex="0">éditions annexes</span>`}
 			{@const msg = translate($locale, 'home.dropMessage')}
 			{@const linkHtml = `<span class="brand-link cursor-pointer text-neutral-500" role="button" tabindex="0">${msg}</span>`}
-			<h1 class="">
+			<h1 class="mb-6">
 				{@html translate($locale, 'home.description.p1', { brand })}
 				{@html translate($locale, 'home.description.p2', { brand })}
 			</h1>
