@@ -437,6 +437,7 @@ function normalizeEditionEntry(entry) {
 function buildWritableEdition(entry) {
 	const ordered = {
 		name: entry.name,
+		slug: entry.slug || slugify(entry.name),
 		id: entry.id,
 		subtitle: entry.subtitle,
 		isbn: entry.isbn,
@@ -625,6 +626,7 @@ function createEditionFromPdf(pdfPath, relativePdfPath, checksum, getPdfMetadata
 	return {
 		id: publishingYear || new Date().getFullYear().toString(),
 		name: fileBaseName,
+		slug: slugify(fileBaseName),
 		subtitle: editionTitle,
 		isbn,
 		description: normalizeWhitespace(metadata['Subject'] || ''),

@@ -44,6 +44,7 @@ function createEdition(overrides = {}) {
 	return {
 		id: '2025',
 		name: 'Example',
+		slug: 'example',
 		subtitle: 'Example subtitle',
 		isbn: '',
 		description: '',

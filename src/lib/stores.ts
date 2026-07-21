@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
 import type { Edition, MenuVariations } from './types';
+import { normalizeEditionKey } from './types';
 import { activeEditions } from './data/editions';
 import { goto } from '$app/navigation';
 import { asset, resolve } from '$app/paths';
@@ -72,17 +73,6 @@ export function getEditionDownloadInfo(edition?: Pick<Edition, 'downloadHref' | 
 	return { href, filename };
 }
 
-function normalizeEditionKey(value?: string | null): string {
-	if (!value) return '';
-
-	return value
-		.normalize('NFD')
-		.replace(/[\u0300-\u036f]/g, '')
-		.toLowerCase()
-		.replace(/[^a-z0-9]+/g, '-')
-		.replace(/^-|-$/g, '');
-}
-
 function getEditionFromAssetKey(key: string): string {
 	const match = key.match(/\/editions\/([^/]+)\//);
 	return normalizeEditionKey(match?.[1]);
@@ -151,7 +141,7 @@ export function openPanel(edition: Edition) {
 	currentReaderPage.set(0);
 	currentPanel.set('book');
 	isFooterOpen.set(false);
-	goto(resolve(`/editions/${edition.name}`));
+	goto(resolve(`/editions/${edition.slug}`));
 }
 
 export const copyText = (t: string) => {
