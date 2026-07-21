@@ -152,24 +152,28 @@
 					<p class="col-span-full text-neutral-500">No pages found.</p>
 				{:else}
 					{#each pages as page, i}
-						<img
-							data-hover={`page-${i + 1}`}
-							id={`page-${i + 1}`}
-							src={page}
-							alt=""
-							loading="lazy"
-							decoding="async"
-							class="protected-image col-span-1 h-auto w-full bg-white object-contain transition-all duration-200 group-hover:opacity-20 hover:cursor-help hover:opacity-100!"
-							draggable="false"
-							oncontextmenu={preventDefault}
-							ondragstart={preventDefault}
-							oncopy={preventDefault}
-							oncut={preventDefault}
-							onselectstart={preventDefault}
+						<button
+							type="button"
+							class="col-span-1 h-auto w-full cursor-help overflow-hidden bg-white p-0 transition-all duration-200 group-hover:opacity-20 hover:opacity-100!"
 							onclick={() => navigateToPage(i)}
-							role="button"
-							tabindex={1}
-						/>
+							aria-label={`page-${i + 1}`}
+						>
+							<img
+								data-hover={`page-${i + 1}`}
+								id={`page-${i + 1}`}
+								src={page}
+								alt=""
+								loading="lazy"
+								decoding="async"
+								class="protected-image h-auto w-full object-contain"
+								draggable="false"
+								oncontextmenu={preventDefault}
+								ondragstart={preventDefault}
+								oncopy={preventDefault}
+								oncut={preventDefault}
+								onselectstart={preventDefault}
+							/>
+						</button>
 					{/each}
 				{/if}
 			{:catch _error}

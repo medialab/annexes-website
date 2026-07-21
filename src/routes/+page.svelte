@@ -31,7 +31,7 @@
 	class:not-showing={!isPageReady}
 	data-hover={$restCursorText}
 	onclick={() => copyText('axel.meunier@sciencespo.fr, donato.ricci@sciencespo.fr')}
-	onkeydown={() => copyText('axel.meunier@sciencespo.fr, donato.ricci@sciencespo.fr')}
+	onkeydown={(e) => e.key === 'Enter' && copyText('axel.meunier@sciencespo.fr, donato.ricci@sciencespo.fr')}
 	role="button"
 	tabindex="0"
 >
@@ -61,26 +61,26 @@
 				class="cursor-pointer text-neutral-500"
 				data-hover={$restCursorText}
 				onclick={() => copyText('annexes@medialab.com')}
-				onkeydown={() => copyText('annexes@medialab.com')}
+				onkeydown={(e) => e.key === 'Enter' && copyText('annexes@medialab.com')}
 				role="button"
 				tabindex="0">éditions annexes</span
 			>
 			est un projet éditorial qui publie des résultats de recherche en dehors des circuits classiques
-			de l’édition scientifique. Il ne prétend pas s’y substituer, mais propose de la compléter, en élargissant
-			l’éventail des formats éditoriaux grâce auxquels une recherche peut se partager : modes d’emploi,
+			de l'édition scientifique. Il ne prétend pas s'y substituer, mais propose de la compléter, en élargissant
+			l'éventail des formats éditoriaux grâce auxquels une recherche peut se partager : modes d'emploi,
 			exercices, protocoles, zine, matériau empirique brut, poster, etc.
 			<span
 				class="cursor-pointer text-neutral-500"
 				data-hover={$restCursorText}
 				onclick={() => copyText('annexes@medialab.com')}
-				onkeydown={() => copyText('annexes@medialab.com')}
+				onkeydown={(e) => e.key === 'Enter' && copyText('annexes@medialab.com')}
 				role="button"
 				tabindex="0">éditions annexes</span
-			> propose en retour de s’interroger sur le rôle des formats dans l’édition scientifique. L’idée
-			directrice du projet est d’inverser le rapport d’importance entre le texte d’une publication et
-			son péritexte (notes de bas de page, illustrations et figures, annexes), grâce à un travail d’édition
+			> propose en retour de s'interroger sur le rôle des formats dans l'édition scientifique. L'idée
+			directrice du projet est d'inverser le rapport d'importance entre le texte d'une publication et
+			son péritexte (notes de bas de page, illustrations et figures, annexes), grâce à un travail d'édition
 			et de design graphique adapté à chaque objet. Enfin, ce mode de publication est rapide, peu onéreux
-			et entièrement autogéré, permettant ainsi de fabriquer des comptes rendus d’une recherche vivante,
+			et entièrement autogéré, permettant ainsi de fabriquer des comptes rendus d'une recherche vivante,
 			en train de se faire.
 		</h1>
 		<h2>
@@ -88,7 +88,7 @@
 				class="cursor-pointer text-neutral-500"
 				data-hover={$restCursorText}
 				onclick={() => copyText('annexes@medialab.com')}
-				onkeydown={() => copyText('annexes@medialab.com')}
+				onkeydown={(e) => e.key === 'Enter' && copyText('annexes@medialab.com')}
 				role="button"
 				tabindex="0">drop a message</span
 			> if you are interested in publishing with us
@@ -97,12 +97,10 @@
 
 	<button
 		class="absolute z-0 h-full w-full cursor-alias"
+		aria-label="Close"
 		onclick={() => goto(homeHref)}
 		onkeydown={(e) => e.key === 'Escape' && goto(homeHref)}
-		role="button"
-		tabindex="0"
-	>
-	</button>
+	></button>
 </main>
 
 <style>

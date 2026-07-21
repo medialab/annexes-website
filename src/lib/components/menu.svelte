@@ -38,7 +38,7 @@
 	});
 </script>
 
-<svelte:window onkeydown={(e) => e.key === 'Escape' && goto(homeHref)} />
+<svelte:window onkeydown={(e) => { if (e.key === 'Escape') goto(homeHref); }} />
 
 <section
 	class="fixed z-10 flex h-screen w-screen justify-start supports-[height:100dvh]:h-dvh md:items-center md:justify-center md:py-12 md:pr-12 md:pl-5 2xl:p-24"
