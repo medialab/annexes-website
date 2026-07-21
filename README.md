@@ -2,80 +2,48 @@
 
 [![Build And Deploy (With PDF Sync)](https://github.com/medialab/editions-annexes/actions/workflows/deploy.yml/badge.svg)](https://github.com/medialab/editions-annexes/actions/workflows/deploy.yml)
 
-A SvelteKit 5 publication interface for éditions annexes, a publishing project
-that produces research outputs outside traditional academic publishing channels.
+Site web des éditions annexes — projet éditorial du medialab Sciences Po.
 
-## Tech Stack
+## Ajouter une publication
 
-- Svelte 5 / SvelteKit 2
-- TypeScript
-- Tailwind CSS 4
-- Vite 7
-- Bun
-- Static site generation (GitHub Pages)
+1. **Déposer le PDF** dans le dossier `static/pdfs/`
+2. **Pousser sur `main`** — la CI détecte le nouveau fichier, génère les pages et vignettes, crée l'entrée dans la base de données, et déploie le site automatiquement
 
-## Setup
+> Le titre, les auteurs·rices, la date et les mots-clés sont automatiquement extraits des métadonnées du PDF (XMP). Si le PDF n'a pas de métadonnées, le nom du fichier sert de titre.
+
+### Via l'interface GitHub
+
+1. Aller sur [github.com/medialab/editions-annexes](https://github.com/medialab/editions-annexes)
+2. Naviguer dans `static/pdfs/` → **Add file** → **Upload files**
+3. Glisser-déposer le PDF → **Commit changes** (sur `main`)
+4. Le déploiement démarre automatiquement. Vérifier le status dans l'onglet **Actions**
+
+### Structure des assets générés
+
+```
+src/lib/media/editions/{slug}/
+├── pages/              # JPEGs (une par page)
+├── canvasElements/     # Vignette de couverture
+└── images/             # Gallery (à ajouter manuellement si besoin)
+```
+
+### Ajouter des images de gallery
+
+Après le déploiement automatique, placer les images dans `src/lib/media/editions/{slug}/images/` et pousser à nouveau.
+
+## Développement local
 
 ```bash
 bun install
 bun run dev
 ```
 
-## Available Scripts
+### Scripts utiles
 
-| Script | Command | Purpose |
-|--------|---------|---------|
-| `dev` | `vite dev` | Development server |
-| `build` | `vite build` | Production build |
-| `preview` | `vite preview` | Preview production build |
-| `check` | `svelte-check` | Type checking |
-| `lint` | `prettier --check .` | Formatting check |
-| `test` | `node --test scripts/process-pdf.test.js` | PDF pipeline tests |
-| `generate:fixtures` | `bun scripts/generate-fixtures.ts` | Generate N fixture editions (set `FIXTURE_COUNT` env) |
-| `restore:data` | `git checkout -- src/lib/data/datasource.ts` | Restore real data after fixtures |
+| Commande | But |
+|----------|-----|
+| `bun scripts/process-pdf.js` | Synchroniser les PDFs avec la base de données |
+| `bun test` | Tester le pipeline PDF |
+| `bun run build` | Build de production |
 
-## Internationalisation
-
-Annexes supports English and French. The active locale is persisted in `localStorage`.
-
-- UI labels are translated via `src/lib/i18n/{en,fr}.json`
-- Editorial content (titles, descriptions, metadata) is NOT translated — it remains as authored
-- Add a new locale by creating a `{locale}.json` file and adding it to `src/lib/i18n/index.ts`
-
-## Project Structure
-
-```
-src/
-├── lib/
-│   ├── components/     # Svelte components
-│   ├── data/           # Edition data source
-│   ├── i18n/           # Internationalisation
-│   ├── media/          # Edition assets (pages, covers, gallery images)
-│   └── types.ts        # Edition type and validators
-├── routes/
-│   ├── +page.svelte    # Homepage with cover gallery
-│   └── editions/
-│       └── [slug]/     # Edition detail page
-└── app.css             # Tailwind + global styles
-```
-
-## Adding a New Edition
-
-1. Add the PDF to `static/pdfs/`
-2. Run `bun scripts/process-pdf.js` to auto-generate:
-   - Page JPEGs in `src/lib/media/editions/{slug}/pages/`
-   - Thumbnail cover in `src/lib/media/editions/{slug}/canvasElements/`
-   - Entry in `src/lib/data/datasource.ts`
-3. Add any gallery images to `src/lib/media/editions/{slug}/images/`
-
-## Configuration
-
-Set environment variables to customise the production URL:
-
-```bash
-SITE_ORIGIN=https://example.com BASE_PATH=/annexes bun run build
-```
-
-## Deployment
-
-Automatically deployed to GitHub Pages on push to `main`. See `.github/workflows/deploy.yml`.
+Le site est automatiquement déployé sur GitHub Pages à chaque push sur `main`. Voir `.github/workflows/deploy.yml`.
