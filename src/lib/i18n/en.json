@@ -39,9 +39,10 @@
 	"gallery.nextImage": "Next image",
 
 	"canvas.title": "éditions annexes",
-	"canvas.description": "éditions annexes est un projet éditorial qui publie des résultats de recherche en dehors des circuits classiques de l'édition scientifique.",
+	"canvas.description": "éditions annexes is a publishing project for research outputs outside traditional academic channels.",
 
-	"home.description": "éditions annexes est un projet éditorial qui publie des résultats de recherche en dehors des circuits classiques de l'édition scientifique. Il ne prétend pas s'y substituer, mais propose de la compléter, en élargissant l'éventail des formats éditoriaux grâce auxquels une recherche peut se partager : modes d'emploi, exercices, protocoles, zine, matériau empirique brut, poster, etc. éditions annexes propose en retour de s'interroger sur le rôle des formats dans l'édition scientifique. L'idée directrice du projet est d'inverser le rapport d'importance entre le texte d'une publication et son péritexte (notes de bas de page, illustrations et figures, annexes), grâce à un travail d'édition et de design graphique adapté à chaque objet. Enfin, ce mode de publication est rapide, peu onéreux et entièrement autogéré, permettant ainsi de fabriquer des comptes rendus d'une recherche vivante, en train de se faire.",
+	"home.description.p1": "{brand} is a publishing project that produces research outputs outside traditional academic publishing channels. It does not claim to replace them, but proposes to complement them by expanding the range of editorial formats through which research can be shared: manuals, exercises, protocols, zines, raw empirical material, posters, etc.",
+	"home.description.p2": "{brand} in turn proposes to question the role of formats in academic publishing. The guiding idea of the project is to reverse the relationship of importance between the text of a publication and its paratext (footnotes, illustrations and figures, appendices), through editorial work and graphic design adapted to each object. Finally, this publishing model is fast, inexpensive and entirely self-managed, making it possible to produce accounts of living research in the making.",
 	"home.collaboration": "We are always looking for new experimental collaborations. Please {link} if you are interested in publishing with us",
 	"home.dropMessage": "drop a message",
 	"home.copyEmail": "Click to get our emails!",

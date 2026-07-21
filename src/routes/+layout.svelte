@@ -11,8 +11,7 @@
 	import { allEditions } from '$lib/stores';
 	import CursorPill from '$lib/components/cursor_pill.svelte';
 	import { cubicInOut } from 'svelte/easing';
-	import annexesIcon from '$lib/assets/icons/annexes.png';
-	import { goto } from '$app/navigation';
+	import Header from '$lib/components/header.svelte';
 
 	let { children } = $props();
 
@@ -46,12 +45,6 @@
 	</main>
 {/key}
 
-<a
-	href={homeHref}
-	onclick={() => goto(homeHref)}
-	class="fixed top-4 left-1/2 z-0 mx-auto h-12 w-fit -translate-x-1/2 cursor-alias p-2 md:z-30"
->
-	<img src={annexesIcon} alt="annexes logo" class="h-full place-self-center align-middle" />
-</a>
+<Header />
 
 <CursorPill></CursorPill>
