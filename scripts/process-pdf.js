@@ -18,10 +18,8 @@ function slugify(text) {
 		.normalize('NFD')
 		.replace(/[\u0300-\u036f]/g, '')
 		.toLowerCase()
-		.trim()
-		.replace(/\s+/g, '-')
-		.replace(/[^\w\.-]+/g, '')
-		.replace(/\-\-+/g, '-');
+		.replace(/[^a-z0-9]+/g, '-')
+		.replace(/^-|-$/g, '');
 }
 
 function normalizeWhitespace(value) {
@@ -296,11 +294,29 @@ function ensureThumbFromFirstPage(imageOutputDir, slug) {
 
 function defaultGeneratePages(pdfPath, slug, imageOutputDir) {
 	const { pagesDir } = ensureEditionAssetDirectories(imageOutputDir, slug);
+	const tempDir = pagesDir + '.generating';
 
 	console.log(`Processing: ${pdfPath} -> ${pagesDir}`);
 
+	if (fs.existsSync(tempDir)) {
+		fs.rmSync(tempDir, { recursive: true, force: true });
+	}
+	fs.mkdirSync(tempDir, { recursive: true });
+
+	try {
+		execFileSync('pdftocairo', ['-jpeg', pdfPath, path.join(tempDir, 'page')]);
+	} catch (err) {
+		fs.rmSync(tempDir, { recursive: true, force: true });
+		throw err;
+	}
+
 	clearGeneratedPages(pagesDir);
-	execFileSync('pdftocairo', ['-jpeg', pdfPath, path.join(pagesDir, 'page')]);
+	const files = fs.readdirSync(tempDir);
+	files.forEach((file) => {
+		fs.renameSync(path.join(tempDir, file), path.join(pagesDir, file));
+	});
+	fs.rmSync(tempDir, { recursive: true, force: true });
+
 	if (!ensureThumbFromFirstPage(imageOutputDir, slug)) {
 		throw new Error(`No generated page JPGs found for ${slug} after conversion.`);
 	}
@@ -391,9 +407,8 @@ function computeFileChecksum(filePath) {
 
 function normalizeStoredRelativePath(value) {
 	if (!value || typeof value !== 'string') return undefined;
-	const trimmed = value.trim();
-	if (!trimmed) return undefined;
-	return trimmed.split(/[\\/]+/).join(path.sep);
+	if (!value.trim()) return undefined;
+	return value.split(/[\\/]+/).join(path.sep);
 }
 
 function toDownloadHref(relativePath) {
@@ -487,7 +502,18 @@ function readDatasource(datasourcePath) {
 	}
 
 	const editionsStr = content.slice(openingBracket, closingBracket + 1);
-	const editions = vm.runInNewContext(`(${editionsStr})`);
+	const normalizeFn = (name) =>
+		(name || '')
+			.toString()
+			.normalize('NFD')
+			.replace(/[\u0300-\u036f]/g, '')
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, '-')
+			.replace(/^-|-$/g, '');
+	const editions = vm.runInNewContext(`(${editionsStr})`, {
+		slug: normalizeFn,
+		normalizeEditionKey: (value) => (value ? normalizeFn(value) : '')
+	});
 
 	if (!Array.isArray(editions)) {
 		throw new Error(`Parsed editions is not an array in ${datasourcePath}`);
@@ -529,13 +555,16 @@ function toTsLiteral(value, depth = 0) {
 function writeDatasource(datasourcePath, editions, prefix, suffix) {
 	const writable = editions.map(buildWritableEdition);
 	const updatedContent = `${prefix}${toTsLiteral(writable)}${suffix}`;
-	fs.writeFileSync(datasourcePath, updatedContent);
+	const tmpPath = datasourcePath + '.tmp';
+	fs.writeFileSync(tmpPath, updatedContent);
+	fs.renameSync(tmpPath, datasourcePath);
 }
 
 function assertUniqueActiveEntries(editions) {
 	const activeEditions = editions.filter((entry) => entry.pdfStatus === PDF_STATUS_ACTIVE);
 	const seenIds = new Map();
 	const seenNames = new Map();
+	const seenSlugs = new Map();
 
 	activeEditions.forEach((entry, index) => {
 		if (entry.pdfId) {
@@ -551,6 +580,15 @@ function assertUniqueActiveEntries(editions) {
 			throw new Error(`Duplicate active edition name '${entry.name}' at indexes ${duplicateNameIndex} and ${index}.`);
 		}
 		seenNames.set(entry.name, index);
+
+		const slug = slugify(entry.name);
+		const duplicateSlugIndex = seenSlugs.get(slug);
+		if (duplicateSlugIndex !== undefined) {
+			throw new Error(
+				`Duplicate active slug '${slug}' (from name '${entry.name}') at indexes ${duplicateSlugIndex} and ${index}.`
+			);
+		}
+		seenSlugs.set(slug, index);
 	});
 }
 
@@ -560,12 +598,18 @@ function buildPdfRecords(pdfSourceDir) {
 	return pdfFiles.map((relativePath) => {
 		const normalizedRelativePath = normalizeStoredRelativePath(relativePath);
 		const rawName = path.basename(normalizedRelativePath, '.pdf');
+		const slug = slugify(rawName);
+		if (!slug) {
+			throw new Error(
+				`PDF '${relativePath}' produces an empty slug. Rename the file to include alphanumeric characters.`
+			);
+		}
 		const pdfPath = path.join(pdfSourceDir, normalizedRelativePath);
 
 		return {
 			relativePath: normalizedRelativePath,
 			rawName,
-			slug: slugify(rawName),
+			slug,
 			pdfPath,
 			checksum: computeFileChecksum(pdfPath)
 		};
@@ -704,6 +748,28 @@ export function syncPdfLibrary(options = {}) {
 		}
 	});
 
+	const activeSlugs = new Set(
+		editions
+			.filter((e) => e.pdfStatus === PDF_STATUS_ACTIVE)
+			.map((e) => slugify(e.name))
+	);
+	const newPdfSlugs = new Map();
+	pdfRecords.forEach((pdfRecord, pdfIndex) => {
+		if (boundPdfIndexes.has(pdfIndex)) return;
+		const existingIndex = newPdfSlugs.get(pdfRecord.slug);
+		if (existingIndex !== undefined) {
+			throw new Error(
+				`New PDFs '${pdfRecords[existingIndex].relativePath}' and '${pdfRecord.relativePath}' both produce slug '${pdfRecord.slug}'.`
+			);
+		}
+		newPdfSlugs.set(pdfRecord.slug, pdfIndex);
+		if (activeSlugs.has(pdfRecord.slug)) {
+			throw new Error(
+				`New PDF '${pdfRecord.relativePath}' slug '${pdfRecord.slug}' conflicts with existing active edition slug.`
+			);
+		}
+	});
+
 	editions.forEach((entry, entryIndex) => {
 		const pdfIndex = boundEntryToPdfIndex.get(entryIndex);
 		if (pdfIndex === undefined) return;
@@ -793,7 +859,7 @@ export function syncPdfLibrary(options = {}) {
 
 	assertUniqueActiveEntries(editions);
 
-	const activeSlugs = new Set(
+	const activeSlugSet = new Set(
 		editions
 			.filter((entry) => entry.pdfStatus === PDF_STATUS_ACTIVE)
 			.map((entry) => slugify(entry.name))
@@ -803,7 +869,7 @@ export function syncPdfLibrary(options = {}) {
 		.filter((file) => fs.statSync(path.join(imageOutputDir, file)).isDirectory());
 
 	assetFolders.forEach((folder) => {
-		if (!activeSlugs.has(folder)) {
+		if (!activeSlugSet.has(folder)) {
 			console.warn(`[CLEANUP] Orphaned Asset Folder: '${folder}'. Removing...`);
 			fs.rmSync(path.join(imageOutputDir, folder), { recursive: true, force: true });
 		}

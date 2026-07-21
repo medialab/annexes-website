@@ -8,7 +8,7 @@ function slug(name: string): string {
 export let editions: Edition[] = [
     {
         name: 'Artificial Inquiries',
-        slug: slug('Artificial Inquiries'),
+        slug: 'artificial-inquiries',
         id: '2025',
         subtitle: 'Annex of Ecologies of LLM Practices',
         isbn: '222-2-3523-23345-6',
@@ -42,7 +42,7 @@ export let editions: Edition[] = [
     },
     {
         name: 'Comment faire avec la parole problématique en ligne',
-        slug: slug('Comment faire avec la parole problématique en ligne'),
+        slug: 'comment-faire-avec-la-parole-problematique-en-ligne',
         id: '2024',
         subtitle: 'Styles de Moderation',
         isbn: '978-2-9597067-0-7',
@@ -74,7 +74,7 @@ export let editions: Edition[] = [
     },
     {
         name: 'Trajectories of Engagement',
-        slug: slug('Trajectories of Engagement'),
+        slug: 'trajectories-of-engagement',
         id: '2025',
         subtitle: 'Trajectories of Engagement: Challenging the Materiality of Participatory Research',
         isbn: '978-2-9597067-2-1',
@@ -112,7 +112,7 @@ export let editions: Edition[] = [
     },
     {
         name: 'scarto',
-        slug: slug('scarto'),
+        slug: 'scarto',
         id: '2025',
         subtitle: 'On Generative AI, Observation, Description, and Representation',
         isbn: '978-2-9597067-3-8',

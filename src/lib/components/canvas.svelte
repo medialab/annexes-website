@@ -92,7 +92,7 @@ import type { Edition } from '$lib/types';
 	const cameraEase = 0.12;
 	const cameraSnapThreshold = 0.2;
 	const cameraDragStrength = 0.9;
-	const stitchPointSpread = 2.5;
+	const stitchPointSpread = 2;
 	const stitchPointRatios: Point[] = [
 		{ x: 0.5, y: 0.5 },
 		{ x: 0.57, y: 0.48 },
@@ -207,8 +207,8 @@ import type { Edition } from '$lib/types';
 			const loopIndex = Math.floor(index / stitchPointRatios.length);
 			const stitchPoint = stitchPointRatios[stitchIndex];
 			const spreadPoint = {
-				x: clamp(0.5 + (stitchPoint.x - 0.5) * stitchPointSpread, 0.06, 0.94),
-				y: clamp(0.5 + (stitchPoint.y - 0.5) * stitchPointSpread, 0.06, 0.94)
+				x: clamp(0.5 + (stitchPoint.x - 0.5) * stitchPointSpread, 0.01, 0.99),
+				y: clamp(0.5 + (stitchPoint.y - 0.5) * stitchPointSpread, 0.01, 0.99)
 			};
 			const squareSpiralOffset = getSquareSpiralOffset(loopIndex);
 			const anchorX =
