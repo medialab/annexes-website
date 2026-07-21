@@ -8,6 +8,8 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"test": "node --test scripts/process-pdf.test.js",
+		"generate:fixtures": "bun scripts/generate-fixtures.ts",
+		"restore:data": "git checkout -- src/lib/data/datasource.ts",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
