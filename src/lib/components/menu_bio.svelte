@@ -138,6 +138,16 @@
 					{/if}
 				</div>
 			</div>
+			{#if hasValue(currentEdition.name) && currentEdition.structuredSections?.length}
+				<div class="flex flex-col gap-4 mt-6">
+					{#each currentEdition.structuredSections as section}
+						<div class="flex flex-col gap-1">
+							<h3 class="text-base font-medium">{section.title}</h3>
+							<p class="text-sm text-neutral-600">{section.content}</p>
+						</div>
+					{/each}
+				</div>
+			{/if}
 		{/if}
 	</div>
 	<div class="h-fit w-full md:h-full md:w-1/2" id="timone">

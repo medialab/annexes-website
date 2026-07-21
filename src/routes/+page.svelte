@@ -12,17 +12,19 @@
 	import { fly } from 'svelte/transition';
 	import { goto } from '$app/navigation';
 	import { homeHref } from '$lib/stores';
+	import { locale, translate } from '$lib/i18n';
+	import { SITE_ORIGIN, SITE_BASE_PATH } from '$lib/config';
 
 	let isPageReady = $state(false);
+	let prefersReducedMotion = $state(false);
 
 	onMount(() => {
 		if (!browser) return;
 		setTimeout(() => {
 			isPageReady = true;
 		}, 400);
+		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	});
-
-	$inspect('currentEdition:', $currentEdition);
 </script>
 
 <div

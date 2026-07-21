@@ -2,13 +2,13 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
-		getEditionElements,
-		openPanel,
-		isTitleShowing,
-		currentEdition,
-		isMobile
-	} from '$lib/stores';
-	import type { Edition } from '$lib/types';
+	getEditionElements,
+	openPanel,
+	isTitleShowing,
+	currentEdition,
+	isMobile
+} from '$lib/stores';
+import type { Edition } from '$lib/types';
 	import { cubicInOut, expoIn, quadIn, quadInOut } from 'svelte/easing';
 	import { draw, fly } from 'svelte/transition';
 	import Gradient from '$lib/components/gradient.svelte';
@@ -814,7 +814,7 @@
 					? placementStyle.ty
 					: 0}px) rotate({placementStyle ? placementStyle.rotate : 0}deg) skewX({placementStyle
 					? placementStyle.skewX
-					: 0}deg) skewY({placementStyle ? placementStyle.skewY : 0}deg); opacity: {placementStyle
+					: 0}deg) skewY({placementStyle ? placementStyle.skewY : 0}deg) scale({cover.edition.featuredCoverScale ?? 1}); opacity: {placementStyle
 					? placementStyle.opacity
 					: 0};"
 				aria-label={cover.edition.name}

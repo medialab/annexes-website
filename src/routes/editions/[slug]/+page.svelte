@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import { getEditionElements, currentEdition } from '$lib/stores';
 	import { hasValue } from '$lib/utils';
+	import { SITE_ORIGIN, SITE_BASE_PATH } from '$lib/config';
 	let { data } = $props();
 
 	$effect(() => {
@@ -23,6 +24,10 @@
 				? data.correctEdition.subtitle
 				: 'Edition from editions annexes.'
 	);
+	const editionUrl = $derived(
+		`${SITE_ORIGIN}${SITE_BASE_PATH}/editions/${data.correctEdition?.slug || ''}/`
+	);
+	const ogImageUrl = $derived(`${SITE_ORIGIN}${SITE_BASE_PATH}/og_image.png`);
 </script>
 
 <svelte:head>
@@ -31,19 +36,13 @@
 	<meta property="og:title" content={pageTitle} />
 	<meta property="og:description" content={pageDescription} />
 	<meta property="og:type" content="website" />
-	<meta
-		property="og:url"
-		content={`https://medialab.github.io/editions-annexes/editions/${data.correctEdition?.name || ''}/`}
-	/>
-	<meta property="og:image" content="https://medialab.github.io/editions-annexes/og_image.png" />
+	<meta property="og:url" content={editionUrl} />
+	<meta property="og:image" content={ogImageUrl} />
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta
-		name="twitter:url"
-		content={`https://medialab.github.io/editions-annexes/editions/${data.correctEdition?.name || ''}/`}
-	/>
+	<meta name="twitter:url" content={editionUrl} />
 	<meta name="twitter:title" content={pageTitle} />
 	<meta name="twitter:description" content={pageDescription} />
-	<meta name="twitter:image" content="https://medialab.github.io/editions-annexes/og_image.png" />
+	<meta name="twitter:image" content={ogImageUrl} />
 </svelte:head>
 
 {#if data.correctEdition}
