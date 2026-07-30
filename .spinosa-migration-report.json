@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "migratedAt": "2026-07-29T11:38:02.812Z",
+  "conflicts": [
+    {
+      "source": "../../.opencode",
+      "target": "../../.spinosa",
+      "result": "conflict"
+    }
+  ]
+}

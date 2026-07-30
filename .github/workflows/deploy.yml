@@ -62,7 +62,8 @@ jobs:
       - name: Build
         run: bun run build
         env:
-          BASE_PATH: /editions-annexes
+          BASE_PATH: ''
+          SITE_ORIGIN: https://editionsannexes.medialab.sciencespo.fr
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
