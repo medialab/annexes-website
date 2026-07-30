@@ -140,5 +140,27 @@ export let editions: Edition[] = [
         downloadHref: 'pdfs/scarto.pdf',
         pdfRelativePath: 'scarto.pdf',
         pdfChecksum: 'da88a02581139a696872004bea311e49e2e5f978cb9f5419f77ff25bd0256afc'
+    },
+    {
+        name: 'FutureObs',
+        slug: 'futureobs',
+        id: '2025',
+        subtitle: 'FutureObs',
+        isbn: '',
+        description: 'converted from application/x-indesign to application/pdf Adobe InDesign 21.0 (Macintosh) / 2025-12-18T15:06:04+01:00',
+        publishingDate: '2025',
+        coPublisher: '',
+        coPublisherUrl: '',
+        editors: [],
+        designers: [],
+        contributors: [],
+        keywords: [],
+        parentProject: '',
+        parentUrl: '',
+        pdfId: '343df480-1e9c-4493-99b8-4b79948f75f6',
+        pdfStatus: 'active',
+        downloadHref: 'pdfs/FutureObs.pdf',
+        pdfRelativePath: 'FutureObs.pdf',
+        pdfChecksum: '892a552bb0b2c187fa148f99e03de33cf0e8728f34b54daf7297410aa36f7518'
     }
 ];
